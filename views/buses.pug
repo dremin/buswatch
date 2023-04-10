@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  nav
+    a(href='/') &laquo; Back
+    h1= title
+  table(cellspacing='0')
+    tr
+      th Bus
+      th First Seen
+      th Last Seen
+      th Route
+      th Block ID
+      th Garage
+    each bus in buses
+      tr
+        td= bus.vid
+        td= bus.firstSeen
+        td= bus.lastSeen
+        td= bus.route
+        td= bus.blockId
+        td= bus.garage

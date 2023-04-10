@@ -1,0 +1,162 @@
+body {
+  font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  padding: 0px 10px;
+  margin: 0px;
+}
+
+/* Reset browser styles */
+
+h1,
+h2,
+h3,
+h4,
+p,
+ol,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+main,
+li {
+  display: block;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+strong {
+  font-weight: bold;
+}
+
+a,
+button, select {
+  color: inherit;
+}
+
+a {
+  text-decoration: none;
+}
+
+::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+:focus {
+  outline: 0;
+}
+
+/* General styles */
+
+main {
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+header, nav {
+  margin: 10px 0px;
+}
+
+header h1, nav h1 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+header p {
+  color: #666;
+}
+
+a {
+  border: 1px solid #2166b1;
+  border-radius: 10px;
+  color: #2166b1;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 10px;
+}
+
+a:hover, a:hover span {
+  background-color: #2166b1;
+  color: #fff;
+}
+
+ul li a {
+  display: block;
+  margin: 10px 0px;
+}
+
+ul li a span {
+  font-size: 14px;
+  font-weight: normal;
+  color: #666;
+}
+
+nav a, nav h1 {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+nav a {
+  margin-right: 20px;
+}
+
+/* Buses table styles */
+
+table {
+  width: 100%;
+}
+
+th {
+  background-color: #2166b1;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px;
+  position: sticky;
+  top: 0;
+}
+
+tr:nth-child(odd){
+  background-color: #eee;
+}
+
+td {
+  border-bottom: 1px solid #999;
+  padding: 10px;
+}
+
+td:nth-child(1) {
+  font-weight: bold;
+}
+
+@media only screen and (max-width: 550px) {
+  body {
+    padding: 0px;
+  }
+  
+  main {
+    margin: 0;
+    max-width: none;
+  }
+  
+  header, nav {
+    margin: 10px;
+  }
+  
+  header {
+    text-align: center;
+  }
+  
+  ul li a {
+    margin: 10px;
+  }
+  
+  td {
+    padding: 10px 5px;
+  }
+}

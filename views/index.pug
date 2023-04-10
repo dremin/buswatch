@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  header
+    h1= title
+    p= subtitle
+  ul
+    each item in series
+      li
+        a(href=`/buses?series=${item.id}`)
+          h4 #{item.id} series &raquo;
+          span= item.description
+    li
+      a(href='/buses') All buses &raquo;
