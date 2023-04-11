@@ -16,7 +16,7 @@ const decodeGarage = (blockId) => {
   }
   
   const encodedGarage = blockId.substring(dashIndex + 1, dashIndex + 2);
-  let garage = encodedGarage;
+  let garage = '';
   
   // use block id to determine garage
   switch (encodedGarage) {
@@ -45,7 +45,6 @@ const decodeGarage = (blockId) => {
       garage = 'C';
       break;
       default:
-      garage = 'Unknown';
       break;
   }
   
@@ -56,6 +55,7 @@ const fetchBusData = async () => {
   // First, get all routes
   const routes = await getRoutes();
   const vehicles = [];
+  const now = db.getDbDateTime();
   
   // Get each vehicle for each route. A vehicle appears on one route at a time.
   // Chunk up to ten routes per API request.
@@ -74,7 +74,7 @@ const fetchBusData = async () => {
     const garage = decodeGarage(bus.tablockid);
     
     // vid, firstSeen, lastSeen, route, blockid, garage
-    db.query(`insert into buses values (${bus.vid}, '${db.getDbDateTime()}', '${db.getDbDateTime()}', '${bus.rt}', '${bus.tablockid}', '${garage}') on conflict(vid) do update set lastSeen = '${db.getDbDateTime()}', route = '${bus.rt}', blockid = '${bus.tablockid}', garage = '${garage}' where vid = ${bus.vid}`, true);
+    db.query(`insert into buses values (${bus.vid}, '${now}', '${now}', '${bus.rt}', '${bus.tablockid}', '${garage}') on conflict(vid) do update set lastSeen = '${now}', route = '${bus.rt}', blockid = '${bus.tablockid}', garage = '${garage}' where vid = ${bus.vid}`, true);
   }
   
   console.log(`Updated bus data at ${new Date()}`);

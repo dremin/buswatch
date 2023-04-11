@@ -7,8 +7,10 @@ block content
   ul
     each item in series
       li
-        a(href=`/buses?series=${item.id}`)
+        a(href=`buses?series=${item.id}`)
           h4 #{item.id} series &raquo;
           span= item.description
     li
-      a(href='/buses') All buses &raquo;
+      a(href='buses?filter=in-service') All buses currently in service &raquo;
+    li
+      a(href='buses') All buses &raquo;

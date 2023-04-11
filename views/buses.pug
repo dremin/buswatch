@@ -2,7 +2,7 @@ extends layout
 
 block content
   nav
-    a(href='/') &laquo; Back
+    a(href='../') &lsaquo; Back
     h1= title
   table(cellspacing='0')
     tr
@@ -13,7 +13,7 @@ block content
       th Block ID
       th Garage
     each bus in buses
-      tr
+      tr(class= bus.isInService ? 'in-service' : bus.isOutOfService ? 'out-of-service' : '')
         td= bus.vid
         td= bus.firstSeen
         td= bus.lastSeen

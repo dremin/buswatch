@@ -1,4 +1,6 @@
-body {
+html, body {
+  background-color: #fff;
+  color: #000;
   font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   padding: 0px 10px;
   margin: 0px;
@@ -68,7 +70,7 @@ header h1, nav h1 {
   font-weight: bold;
 }
 
-header p {
+header p, ul li a span {
   color: #666;
 }
 
@@ -94,7 +96,6 @@ ul li a {
 ul li a span {
   font-size: 14px;
   font-weight: normal;
-  color: #666;
 }
 
 nav a, nav h1 {
@@ -125,6 +126,14 @@ tr:nth-child(odd){
   background-color: #eee;
 }
 
+tr.in-service {
+  color: #009b00;
+}
+
+tr.out-of-service {
+  color: #d80000;
+}
+
 td {
   border-bottom: 1px solid #999;
   padding: 10px;
@@ -134,8 +143,39 @@ td:nth-child(1) {
   font-weight: bold;
 }
 
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #111;
+    color: #ddd;
+  }
+  
+  header p, ul li a span {
+    color: #999;
+  }
+  
+  a {
+    color: #2982e0;
+  }
+  
+  tr:nth-child(odd){
+    background-color: #222;
+  }
+  
+  tr.in-service {
+    color: #00BC00;
+  }
+  
+  tr.out-of-service {
+    color: #FF3D3D;
+  }
+  
+  td {
+    border-bottom: 1px solid #666;
+  }
+}
+
 @media only screen and (max-width: 550px) {
-  body {
+  html, body {
     padding: 0px;
   }
   
@@ -154,6 +194,10 @@ td:nth-child(1) {
   
   ul li a {
     margin: 10px;
+  }
+  
+  th {
+    font-size: 12px;
   }
   
   td {
