@@ -15,7 +15,6 @@ function runQuery(req, isNonQuery) {
   }
   
   try {
-    //console.log(`Performing database query: '${req}'`);
     if (isNonQuery) {
       return db.prepare(req).run();
     } else {
@@ -70,5 +69,6 @@ exports.query = (req, isNonQuery) => {
 };
 
 exports.getDbDateTime = () => {
+  // Return time as seconds since epoch
   return Math.round(Date.now() / 1000);
 }
