@@ -35,6 +35,11 @@ router.get('/:series/:filter', function(req, res, next) {
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} (${now} - lastSeen > ${process.env.OUT_OF_SERVICE_THRESHOLD_SEC} or lastSeen is null)`;
     title = `${title} 1+ month out of service`;
     break;
+    case '2-weeks':
+    allowColor = true;
+    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} (${now} - lastSeen > 1209600 or lastSeen is null)`;
+    title = `${title} 2+ weeks out of service`;
+    break;
     default:
     allowColor = true;
     filter = 'all';
