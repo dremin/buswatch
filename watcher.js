@@ -1,54 +1,12 @@
 const axios = require('axios');
 const db = require('./db');
+const utils = require('./utils');
 
 let watchInterval;
 
 exports.init = () => {
   watchInterval = setInterval(fetchBusData, process.env.INTERVAL_MIN * 60 * 1000);
   fetchBusData();
-}
-
-const decodeGarage = (blockId) => {
-  const dashIndex = blockId.indexOf('-');
-  
-  if (dashIndex < 0 || blockId.length < 2) {
-    return 'Unknown';
-  }
-  
-  const encodedGarage = blockId.substring(dashIndex + 1, dashIndex + 2);
-  let garage = '';
-  
-  // use block id to determine garage
-  switch (encodedGarage) {
-      case '1':
-      garage = '3';
-      break;
-      case '2':
-      garage = 'K';
-      break;
-      case '3':
-      garage = 'A';
-      break;
-      case '4':
-      garage = 'F';
-      break;
-      case '5':
-      garage = 'P';
-      break;
-      case '6':
-      garage = '6';
-      break;
-      case '7':
-      garage = '7';
-      break;
-      case '8':
-      garage = 'C';
-      break;
-      default:
-      break;
-  }
-  
-  return garage;
 }
 
 const fetchBusData = async () => {
@@ -71,10 +29,16 @@ const fetchBusData = async () => {
   // Update the database
   for (vehicle in vehicles) {
     const bus = vehicles[vehicle];
-    const garage = decodeGarage(bus.tablockid);
+    const garage = utils.decodeGarage(bus.tablockid, false);
     
-    // vid, firstSeen, lastSeen, route, blockid, garage
-    db.query(`insert into buses values (${bus.vid}, '${now}', '${now}', '${bus.rt}', '${bus.tablockid}', '${garage}') on conflict(vid) do update set lastSeen = '${now}', route = '${bus.rt}', blockid = '${bus.tablockid}', garage = '${garage}' where vid = ${bus.vid}`, true);
+    // common case, update existing bus
+    const updateResult = db.query('update buses set lastSeen = ?, route = ?, blockid = ?, garage = ? where vid = ?', true, [ now, bus.rt, bus.tablockid, garage, bus.vid ]);
+    
+    if (updateResult.changes < 1) {
+      // missing row -> new bus!
+      db.query('insert into buses (vid, firstSeen, lastSeen, route, blockId, garage) values (?, ?, ?, ?, ?, ?)', true, [ bus.vid, now, now, bus.rt, bus.tablockid, garage ]);
+      utils.postNewBus(bus);
+    }
   }
   
   console.log(`Updated bus data at ${new Date()}`);

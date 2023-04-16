@@ -4,7 +4,7 @@ const sqlite3 = require('better-sqlite3');
 const dbFile = process.env.HOME + '/buswatch.db';
 var db;
 
-function runQuery(req, isNonQuery) {
+function runQuery(req, isNonQuery, params) {
   if (!db) {
     init();
   }
@@ -16,7 +16,7 @@ function runQuery(req, isNonQuery) {
   
   try {
     if (isNonQuery) {
-      return db.prepare(req).run();
+      return db.prepare(req).run(...params);
     } else {
       return db.prepare(req).all();
     }
@@ -64,8 +64,8 @@ function init() {
   process.on('SIGTERM', () => process.exit(128 + 15));
 }
 
-exports.query = (req, isNonQuery) => {
-  return runQuery(req, isNonQuery);
+exports.query = (req, isNonQuery, params) => {
+  return runQuery(req, isNonQuery, params);
 };
 
 exports.getDbDateTime = () => {

@@ -2,8 +2,14 @@ extends layout
 
 block content
   nav
-    a(href='../') &lsaquo; Back
+    a(href=backUrl) &lsaquo; Back
     h1= title
+  if filter == 'all' && series
+    ul
+      li
+        a(href=`/series/${series.id}/in-service`) #{series.id}-series buses currently in service&nbsp;&raquo;
+      li
+        a(href=`/series/${series.id}/out-of-service`) #{series.id}-series buses 1+ month out of service&nbsp;&raquo;
   table(cellspacing='0')
     tr
       th Bus

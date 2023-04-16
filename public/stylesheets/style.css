@@ -61,6 +61,10 @@ main {
   max-width: 600px;
 }
 
+header {
+  text-align: center;
+}
+
 header, nav {
   margin: 10px 0px;
 }
@@ -70,8 +74,18 @@ header h1, nav h1 {
   font-weight: bold;
 }
 
+header p {
+  margin-bottom: 3px;
+}
+
 header p, ul li a span {
   color: #666;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 a {
@@ -104,7 +118,7 @@ nav a, nav h1 {
 }
 
 nav a {
-  margin-right: 20px;
+  flex-shrink: 0;
 }
 
 /* Buses table styles */
@@ -186,10 +200,6 @@ td:nth-child(1) {
   
   header, nav {
     margin: 10px;
-  }
-  
-  header {
-    text-align: center;
   }
   
   ul li a {

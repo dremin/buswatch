@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 exports.series = [
   {
     id: '600',
@@ -25,7 +27,7 @@ exports.series = [
   },
   {
     id: '4300',
-    description: '2012 New Flyer D60LFR & DE60LFR',
+    description: '2012 New Flyer DE60LFR & D60LFR',
     min: 4300,
     max: 4399
   },
@@ -43,6 +45,58 @@ exports.series = [
   },
 ];
 
+exports.decodeGarage = (blockId, expand) => {
+  const dashIndex = blockId.indexOf('-');
+  
+  if (dashIndex < 0 || blockId.length < 2) {
+    return 'Unknown';
+  }
+  
+  const encodedGarage = blockId.substring(dashIndex + 1, dashIndex + 2);
+  let garage = '';
+  let expandedGarage = '';
+  
+  // use block id to determine garage
+  switch (encodedGarage) {
+      case '1':
+      garage = '3';
+      expandedGarage = '103rd';
+      break;
+      case '2':
+      garage = 'K';
+      expandedGarage = 'Kedzie';
+      break;
+      case '3':
+      garage = 'A';
+      expandedGarage = 'Archer';
+      break;
+      case '4':
+      garage = 'F';
+      expandedGarage = 'Forest Glen';
+      break;
+      case '5':
+      garage = 'P';
+      expandedGarage = 'North Park';
+      break;
+      case '6':
+      garage = '6';
+      expandedGarage = '74th';
+      break;
+      case '7':
+      garage = '7';
+      expandedGarage = '77th';
+      break;
+      case '8':
+      garage = 'C';
+      expandedGarage = 'Chicago';
+      break;
+      default:
+      break;
+  }
+  
+  return expand ? expandedGarage : garage;
+}
+
 exports.epochToDisplay = (epoch) => {
   const options = {
     timeZone: 'America/Chicago',
@@ -57,7 +111,15 @@ exports.epochToDisplay = (epoch) => {
     return '';
   }
   
-  return new Date(epoch * 1000).toLocaleString('en-US', options);
+  const date = new Date(epoch * 1000);
+  
+  if ((date.getUTCHours() === 5 || date.getUTCHours() === 6) && date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0) {
+    // Exactly midnight just means incomplete data
+    delete options.hour;
+    delete options.minute;
+  }
+  
+  return date.toLocaleString('en-US', options);
 }
 
 exports.isInService = (now, lastSeen) => {
@@ -70,8 +132,28 @@ exports.isInService = (now, lastSeen) => {
 
 exports.isOutOfService = (now, lastSeen) => {
   if (!lastSeen) {
-    return false;
+    return true;
   }
   
   return now - lastSeen > process.env.OUT_OF_SERVICE_THRESHOLD_SEC;
+}
+
+exports.postNewBus = async (bus) => {
+  if (!process.env.NEW_BUS_WEBHOOK_URL) {
+    return;
+  }
+  
+  const body = {
+    content: `**New bus detected!** Bus **${bus.vid}** has entered service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)}** garage (Block ID: ${bus.tablockid})`
+  }
+  
+  const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
+  
+  for (urlIndex in webhookUrls) {
+    try {
+      await axios.post(webhookUrls[urlIndex], body);
+    } catch (error) {
+      console.log('Error posting to webhook', error);
+    }
+  }
 }
