@@ -15,6 +15,11 @@ const fetchBusData = async () => {
   const vehicles = [];
   const now = db.getDbDateTime();
   
+  if (!routes) {
+    console.log(`Failed to update bus data at ${new Date()}`);
+    return;
+  }
+  
   // Get each vehicle for each route. A vehicle appears on one route at a time.
   // Chunk up to ten routes per API request.
   for (let i = 0; i < routes.length; i += 10) {
