@@ -21,13 +21,13 @@ exports.series = [
   },
   {
     id: '4000',
-    description: '2008 New Flyer DE60LF',
+    description: '2008-2009 New Flyer DE60LF',
     min: 4000,
     max: 4207
   },
   {
     id: '4300',
-    description: '2012 New Flyer DE60LFR & D60LFR',
+    description: '2012-2013 New Flyer DE60LFR & D60LFR',
     min: 4300,
     max: 4399
   },
@@ -39,7 +39,7 @@ exports.series = [
   },
   {
     id: '8350',
-    description: '2022-? Nova Bus LFS',
+    description: '2022-2025 Nova Bus LFS',
     min: 8350,
     max: 8949
   },
