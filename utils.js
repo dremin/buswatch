@@ -144,7 +144,7 @@ exports.postNewBus = async (bus) => {
   }
   
   const body = {
-    content: `**New bus detected!** Bus **${bus.vid}** has entered service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)}** garage (Block ID: ${bus.tablockid})`
+    content: `Bus **${bus.vid}** has entered service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)}** garage (Block ID: ${bus.tablockid})`
   }
   
   const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
