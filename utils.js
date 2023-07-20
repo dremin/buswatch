@@ -66,10 +66,6 @@ exports.decodeGarage = (blockId, expand) => {
       garage = 'K';
       expandedGarage = 'Kedzie';
       break;
-      case '3':
-      garage = 'A';
-      expandedGarage = 'Archer';
-      break;
       case '4':
       garage = 'F';
       expandedGarage = 'Forest Glen';

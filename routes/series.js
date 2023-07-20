@@ -66,7 +66,8 @@ router.get('/:series/:filter', function(req, res, next) {
     buses,
     backUrl: series ? filter !== 'all' ? `/series/${series.id}/all` : '/' : '/',
     filter,
-    series
+    series,
+    busCount: buses.length,
   });
 });
 

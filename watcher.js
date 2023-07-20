@@ -36,6 +36,11 @@ const fetchBusData = async () => {
     const bus = vehicles[vehicle];
     const garage = utils.decodeGarage(bus.tablockid, false);
     
+    if (bus.vid < 10) {
+      // filter out bogus data
+      continue;
+    }
+    
     // common case, update existing bus
     const updateResult = db.query('update buses set lastSeen = ?, route = ?, blockid = ?, garage = ? where vid = ?', true, [ now, bus.rt, bus.tablockid, garage, bus.vid ]);
     
