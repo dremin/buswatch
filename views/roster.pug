@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  nav
+    a(href=backUrl) &lsaquo; Back
+    h1= title
+  ul
+    each garage in garages
+      li
+        a(href=`/roster/${garage.sticker}`)
+          h4 #{garage.name} garage &raquo;
+          span #{garage.busCount} bus#{garage.busCount != 1 ? 'es' : ''}

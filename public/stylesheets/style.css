@@ -124,6 +124,13 @@ nav a {
   flex-shrink: 0;
 }
 
+h2 {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px 0px 10px;
+}
+
 /* Buses table styles */
 
 table {

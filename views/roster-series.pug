@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  nav
+    a(href=backUrl) &lsaquo; Back
+    h1 #{garage.name} garage
+  each series in garage.series
+    if series.busCount > 0
+      h2 #{series.id} series (#{series.busCount} bus#{series.busCount != 1 ? 'es' : ''}) 
+      table(cellspacing='0')
+        tr
+          th Bus
+          th First Seen
+          th Last Seen
+          th Route
+          th Block ID
+        each bus in series.buses
+          tr(class= bus.isInService ? 'in-service' : bus.isOutOfService ? 'out-of-service' : '')
+            td= bus.vid
+            td= bus.firstSeen
+            td= bus.lastSeen
+            td= bus.route
+            td= bus.blockId
+  div(class='tableCount') #{garage.busCount} total bus#{garage.busCount != 1 ? 'es' : ''}

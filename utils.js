@@ -45,6 +45,44 @@ exports.series = [
   },
 ];
 
+exports.garages = [
+  {
+    encoded: '1',
+    sticker: '3',
+    name: '103rd',
+  },
+  {
+    encoded: '2',
+    sticker: 'K',
+    name: 'Kedzie',
+  },
+  {
+    encoded: '4',
+    sticker: 'F',
+    name: 'Forest Glen',
+  },
+  {
+    encoded: '5',
+    sticker: 'P',
+    name: 'North Park',
+  },
+  {
+    encoded: '6',
+    sticker: '6',
+    name: '74th',
+  },
+  {
+    encoded: '7',
+    sticker: '7',
+    name: '77th',
+  },
+  {
+    encoded: '8',
+    sticker: 'C',
+    name: 'Chicago',
+  },
+];
+
 exports.decodeGarage = (blockId, expand) => {
   const dashIndex = blockId.indexOf('-');
   
@@ -57,37 +95,11 @@ exports.decodeGarage = (blockId, expand) => {
   let expandedGarage = '';
   
   // use block id to determine garage
-  switch (encodedGarage) {
-      case '1':
-      garage = '3';
-      expandedGarage = '103rd';
-      break;
-      case '2':
-      garage = 'K';
-      expandedGarage = 'Kedzie';
-      break;
-      case '4':
-      garage = 'F';
-      expandedGarage = 'Forest Glen';
-      break;
-      case '5':
-      garage = 'P';
-      expandedGarage = 'North Park';
-      break;
-      case '6':
-      garage = '6';
-      expandedGarage = '74th';
-      break;
-      case '7':
-      garage = '7';
-      expandedGarage = '77th';
-      break;
-      case '8':
-      garage = 'C';
-      expandedGarage = 'Chicago';
-      break;
-      default:
-      break;
+  const decoded = exports.garages.find(g => g.encoded == encodedGarage);
+  
+  if (decoded) {
+    garage = decoded.sticker;
+    expandedGarage = decoded.name;
   }
   
   return expand ? expandedGarage : garage;
