@@ -31,6 +31,9 @@ const fetchBusData = async () => {
     }
   }
   
+  // Get the current state so that we can compare
+  const buses = db.query(`select * from buses order by vid asc`, false);
+  
   // Update the database
   for (vehicle in vehicles) {
     const bus = vehicles[vehicle];
@@ -39,6 +42,15 @@ const fetchBusData = async () => {
     if (bus.vid < 10) {
       // filter out bogus data
       continue;
+    }
+    
+    const existingBus = buses.find(b => b.vid == bus.vid);
+    
+    if (existingBus) {
+      // check if we should send any change alerts
+      if (utils.isOutOfService(now, existingBus.lastSeen)) {
+        utils.postRevivedBus(bus, now - existingBus.lastSeen);
+      }
     }
     
     // common case, update existing bus

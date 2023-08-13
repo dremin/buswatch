@@ -165,3 +165,46 @@ exports.postNewBus = async (bus) => {
     }
   }
 }
+
+const secondsToStr = (seconds) => {
+  let y = Math.floor(seconds / 31536000);
+  let mo = Math.floor((seconds % 31536000) / 2628000);
+  let d = Math.floor(((seconds % 31536000) % 2628000) / 86400);
+  let h = Math.floor((seconds % (3600 * 24)) / 3600);
+  let m = Math.floor((seconds % 3600) / 60);
+  let s = Math.floor(seconds % 60);
+  
+  let components = [];
+  
+  if (y > 0) {
+    components.push(y + (y === 1 ? " year" : " years"));
+  }
+  if (mo > 0) {
+    components.push(mo + (mo === 1 ? " month" : " months"));
+  }
+  if (d > 0) {
+    components.push(d + (d === 1 ? " day" : " days"));
+  }
+  
+  return components.join(", ");
+}
+
+exports.postRevivedBus = async (bus, secondsSince) => {
+  if (!process.env.NEW_BUS_WEBHOOK_URL) {
+    return;
+  }
+  
+  const body = {
+    content: `Bus **${bus.vid}** has returned to service on route **${bus.rt}** after being out of service for **${secondsToStr(secondsSince)}**`
+  }
+  
+  const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
+  
+  for (urlIndex in webhookUrls) {
+    try {
+      await axios.post(webhookUrls[urlIndex], body);
+    } catch (error) {
+      console.log('Error posting to webhook', error);
+    }
+  }
+}
