@@ -3,7 +3,7 @@ extends layout
 block content
   nav
     a(href=backUrl) &lsaquo; Back
-    h1 #{garage.name} garage
+    h1= title
   each series in garage.series
     if series.busCount > 0
       h2 #{series.id} series (#{series.busCount} bus#{series.busCount != 1 ? 'es' : ''}) 
