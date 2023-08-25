@@ -48,7 +48,7 @@ router.get('/:sticker', function(req, res, next) {
   garage.busCount = garage.series.reduce((acc, cur) => acc + cur.busCount, 0);
   
   res.render('roster-series', {
-    title: `${garage.name} garage`,
+    title: `${garage.name} Garage`,
     garage,
     backUrl: '/roster/',
   });
