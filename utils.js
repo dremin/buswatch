@@ -138,9 +138,13 @@ exports.isInService = (now, lastSeen) => {
   return now - lastSeen < process.env.IN_SERVICE_THRESHOLD_SEC;
 }
 
-exports.isOutOfService = (now, lastSeen) => {
+exports.isOutOfService = (now, lastSeen, override) => {
   if (!lastSeen) {
     return true;
+  }
+  
+  if (override) {
+    return now - lastSeen > override;
   }
   
   return now - lastSeen > process.env.OUT_OF_SERVICE_THRESHOLD_SEC;
@@ -167,6 +171,10 @@ exports.postNewBus = async (bus) => {
 }
 
 const secondsToStr = (seconds) => {
+  if (seconds < 1) {
+    return "a long time";
+  }
+  
   let y = Math.floor(seconds / 31536000);
   let mo = Math.floor((seconds % 31536000) / 2628000);
   let d = Math.floor(((seconds % 31536000) % 2628000) / 86400);
@@ -207,4 +215,7 @@ exports.postRevivedBus = async (bus, secondsSince) => {
       console.log('Error posting to webhook', error);
     }
   }
+  
+  // snooze to prevent rate limiting
+  await new Promise(r => setTimeout(r, 2000));
 }

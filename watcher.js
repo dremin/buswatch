@@ -48,8 +48,9 @@ const fetchBusData = async () => {
     
     if (existingBus) {
       // check if we should send any change alerts
-      if (utils.isOutOfService(now, existingBus.lastSeen)) {
-        utils.postRevivedBus(bus, now - existingBus.lastSeen);
+      // use double the OOS threshold to keep notifications notable
+      if (utils.isOutOfService(now, existingBus.lastSeen, process.env.OUT_OF_SERVICE_THRESHOLD_SEC * 2)) {
+        await utils.postRevivedBus(bus, existingBus.lastSeen ? now - existingBus.lastSeen : 0);
       }
     }
     
@@ -59,7 +60,7 @@ const fetchBusData = async () => {
     if (updateResult.changes < 1) {
       // missing row -> new bus!
       db.query('insert into buses (vid, firstSeen, lastSeen, route, blockId, garage) values (?, ?, ?, ?, ?, ?)', true, [ bus.vid, now, now, bus.rt, bus.tablockid, garage ]);
-      utils.postNewBus(bus);
+      await utils.postNewBus(bus);
     }
   }
   
