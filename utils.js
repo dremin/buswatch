@@ -33,7 +33,7 @@ exports.series = [
   },
   {
     id: '7900',
-    description: '2014-2019 Nova Bus LFS',
+    description: '2014-2018 Nova Bus LFS',
     min: 7900,
     max: 8349
   },
