@@ -91,7 +91,7 @@ nav {
   gap: 20px;
 }
 
-a {
+nav a, ul li a {
   border: 1px solid #2166b1;
   border-radius: 10px;
   color: #2166b1;
@@ -100,7 +100,7 @@ a {
   padding: 10px;
 }
 
-a:hover, a:hover span {
+nav a:hover, nav a:hover span, ul li a:hover, ul li a:hover span {
   background-color: #2166b1;
   color: #fff;
 }
@@ -167,6 +167,13 @@ td:nth-child(1) {
   font-weight: bold;
 }
 
+td a {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
 .tableCount {
   font-weight: bold;
   padding: 10px;
@@ -183,7 +190,7 @@ td:nth-child(1) {
     color: #999;
   }
   
-  a {
+  nav a, ul li a {
     color: #2982e0;
   }
   

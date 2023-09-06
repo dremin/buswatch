@@ -36,6 +36,7 @@ function createDatabase() {
       route text,
       blockId text,
       garage text,
+      note text,
       primary key(vid)
     );
     `).run();

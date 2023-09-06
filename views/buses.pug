@@ -22,7 +22,11 @@ block content
       th Garage
     each bus in buses
       tr(class= bus.isInService ? 'in-service' : bus.isOutOfService ? 'out-of-service' : '')
-        td= bus.vid
+        if bus.note
+          td
+            a(onclick=`showNote('${bus.vid}', '${bus.note}')`) #{bus.vid}
+        else
+          td= bus.vid
         td= bus.firstSeen
         td= bus.lastSeen
         td= bus.route
