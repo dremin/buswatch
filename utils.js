@@ -15,7 +15,7 @@ exports.series = [
   },
   {
     id: '1000',
-    description: '2006-2009 New Flyer D40LF',
+    description: '2005-2008 New Flyer D40LF',
     min: 1000,
     max: 2029
   },
