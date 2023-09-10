@@ -30,3 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
 const showNote = (bus, note) => {
   alert(`Bus ${bus} notes:\r\n${note}`);
 }
+
+const showHideDivs = (show, hide) => {
+	document.getElementById(hide).style.display = 'none';
+	document.getElementById(show).style.display = 'block';
+}

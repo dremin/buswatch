@@ -131,6 +131,15 @@ h2 {
   margin: 20px 0px 10px;
 }
 
+#filters {
+  display: none;
+}
+
+#filtersPlaceholder ul li a {
+  cursor: pointer;
+  text-align: center;
+}
+
 /* Buses table styles */
 
 table {

@@ -5,13 +5,20 @@ block content
     a(href=backUrl) &lsaquo; Back
     h1= title
   if filter == 'all' && series
-    ul
-      li
-        a(href=`/series/${series.id}/in-service`) #{series.id}-series buses currently in service&nbsp;&raquo;
-      li
-        a(href=`/series/${series.id}/stale`) #{series.id}-series buses #{staleTitle}&nbsp;&raquo;
-      li
-        a(href=`/series/${series.id}/out-of-service`) #{series.id}-series buses #{oosTitle}&nbsp;&raquo;
+    div(id='filtersPlaceholder')
+      ul
+        li
+          a(onclick=`showHideDivs('filters', 'filtersPlaceholder')`) Show filters
+    div(id='filters')
+      ul
+        li
+          a(href=`/series/${series.id}/in-service`) #{series.id}-series buses currently in service&nbsp;&raquo;
+        li
+          a(href=`/series/${series.id}/stale`) #{series.id}-series buses #{staleTitle}&nbsp;&raquo;
+        li
+          a(href=`/series/${series.id}/out-of-service`) #{series.id}-series buses #{oosTitle}&nbsp;&raquo;
+        li
+          a(href=`/series/${series.id}/note`) #{series.id}-series buses with notes&nbsp;&raquo;
   table(cellspacing='0')
     tr
       th Bus

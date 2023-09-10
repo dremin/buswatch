@@ -42,6 +42,11 @@ router.get('/:series/:filter', function(req, res, next) {
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} (${now} - lastSeen > ${process.env.STALE_THRESHOLD_SEC} or lastSeen is null)`;
     title = `${title} ${staleTitle}`;
     break;
+    case 'note':
+    allowColor = true;
+    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} note is not null and note != ''`;
+    title = `${title} with notes`;
+    break;
     default:
     allowColor = true;
     filter = 'all';
