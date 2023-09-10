@@ -6,6 +6,8 @@ var utils = require('../utils');
 
 router.get('/:series/:filter', function(req, res, next) {
   const now = db.getDbDateTime();
+  const oosTitle = `${utils.secondsToTitleStr(process.env.OUT_OF_SERVICE_THRESHOLD_SEC, true)} out of service`;
+  const staleTitle = `${utils.secondsToTitleStr(process.env.STALE_THRESHOLD_SEC, true)} out of service`;
   
   let allowColor = false;
   let filter;
@@ -33,12 +35,12 @@ router.get('/:series/:filter', function(req, res, next) {
     break;
     case 'out-of-service':
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} (${now} - lastSeen > ${process.env.OUT_OF_SERVICE_THRESHOLD_SEC} or lastSeen is null)`;
-    title = `${title} 1+ month out of service`;
+    title = `${title} ${oosTitle}`;
     break;
-    case '2-weeks':
+    case 'stale':
     allowColor = true;
-    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} (${now} - lastSeen > 1209600 or lastSeen is null)`;
-    title = `${title} 2+ weeks out of service`;
+    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} (${now} - lastSeen > ${process.env.STALE_THRESHOLD_SEC} or lastSeen is null)`;
+    title = `${title} ${staleTitle}`;
     break;
     default:
     allowColor = true;
@@ -63,6 +65,8 @@ router.get('/:series/:filter', function(req, res, next) {
   
   res.render('buses', {
     title,
+    oosTitle,
+    staleTitle,
     buses,
     backUrl: series ? filter !== 'all' ? `/series/${series.id}/all` : '/' : '/',
     filter,

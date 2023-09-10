@@ -9,9 +9,9 @@ block content
       li
         a(href=`/series/${series.id}/in-service`) #{series.id}-series buses currently in service&nbsp;&raquo;
       li
-        a(href=`/series/${series.id}/2-weeks`) #{series.id}-series buses 2+ weeks out of service&nbsp;&raquo;
+        a(href=`/series/${series.id}/stale`) #{series.id}-series buses #{staleTitle}&nbsp;&raquo;
       li
-        a(href=`/series/${series.id}/out-of-service`) #{series.id}-series buses 1+ month out of service&nbsp;&raquo;
+        a(href=`/series/${series.id}/out-of-service`) #{series.id}-series buses #{oosTitle}&nbsp;&raquo;
   table(cellspacing='0')
     tr
       th Bus

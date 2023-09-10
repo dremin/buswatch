@@ -175,23 +175,49 @@ const secondsToStr = (seconds) => {
     return "a long time";
   }
   
-  let y = Math.floor(seconds / 31536000);
-  let mo = Math.floor((seconds % 31536000) / 2628000);
-  let d = Math.floor(((seconds % 31536000) % 2628000) / 86400);
-  let h = Math.floor((seconds % (3600 * 24)) / 3600);
-  let m = Math.floor((seconds % 3600) / 60);
-  let s = Math.floor(seconds % 60);
+  let years = Math.floor(seconds / 31536000);
+  let months = Math.floor((seconds % 31536000) / 2628000);
+  let days = Math.floor(((seconds % 31536000) % 2628000) / 86400);
   
   let components = [];
   
-  if (y > 0) {
-    components.push(y + (y === 1 ? " year" : " years"));
+  if (years > 0) {
+    components.push(`${years} year${years === 1 ? '' : 's'}`);
   }
-  if (mo > 0) {
-    components.push(mo + (mo === 1 ? " month" : " months"));
+  if (months > 0) {
+    components.push(`${months} month${months === 1 ? '' : 's'}`);
   }
-  if (d > 0) {
-    components.push(d + (d === 1 ? " day" : " days"));
+  if (days > 0) {
+    components.push(`${days} day${days === 1 ? '' : 's'}`);
+  }
+  
+  return components.join(", ");
+}
+
+exports.secondsToTitleStr = (seconds, greater) => {
+  let years = Math.floor(seconds / 31536000);
+  let notYears = seconds % 31536000;
+  let months = Math.floor(notYears / 2628000);
+  let notMonths = notYears % 2628000;
+  let weeks = Math.floor(notMonths / 604800);
+  let days = Math.floor((notMonths % 604800) / 86400);
+  
+  let components = [];
+  
+  if (years > 0) {
+    components.push(`${years}${greater && components.length < 1 ? '+' : ''} year${years === 1 ? '' : 's'}`);
+  }
+  
+  if (months > 0) {
+    components.push(`${months}${greater && components.length < 1 ? '+' : ''} month${months === 1 ? '' : 's'}`);
+  }
+  
+  if (weeks > 0) {
+    components.push(`${weeks}${greater && components.length < 1 ? '+' : ''} week${weeks === 1 ? '' : 's'}`);
+  }
+  
+  if (days > 0) {
+    components.push(`${days}${greater && components.length < 1 ? '+' : ''} day${days === 1 ? '' : 's'}`);
   }
   
   return components.join(", ");

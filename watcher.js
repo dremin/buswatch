@@ -48,8 +48,7 @@ const fetchBusData = async () => {
     
     if (existingBus) {
       // check if we should send any change alerts
-      // use double the OOS threshold to keep notifications notable
-      if (utils.isOutOfService(now, existingBus.lastSeen, process.env.OUT_OF_SERVICE_THRESHOLD_SEC * 2)) {
+      if (utils.isOutOfService(now, existingBus.lastSeen, process.env.OUT_OF_SERVICE_ALERT_THRESHOLD_SEC)) {
         await utils.postRevivedBus(bus, existingBus.lastSeen ? now - existingBus.lastSeen : 0);
       }
     }

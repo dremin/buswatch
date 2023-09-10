@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
   
   let title = 'Garage rosters';
   
-  let buses = db.query(`select * from buses order by vid asc`, false);
+  let buses = db.query(`select * from buses where lastSeen >= ${now - process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC} order by vid asc`, false);
   
   let garages = [];
   
@@ -22,6 +22,7 @@ router.get('/', function(req, res, next) {
   res.render('roster', {
     title,
     garages,
+    subtitle: `To improve accuracy, only buses in service within the last ${utils.secondsToTitleStr(process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC, false)} are listed.`,
     backUrl: '/',
   });
 });
@@ -29,7 +30,7 @@ router.get('/', function(req, res, next) {
 router.get('/:sticker', function(req, res, next) {
   const now = db.getDbDateTime();
   
-  let buses = db.query(`select * from buses order by vid asc`, false);
+  let buses = db.query(`select * from buses where lastSeen >= ${now - process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC} order by vid asc`, false);
   
   let garage = { ...utils.garages.find(g => g.sticker == req.params.sticker), series: [ ...utils.series ] };
   
