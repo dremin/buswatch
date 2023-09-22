@@ -8,7 +8,7 @@ block content
   ul
     each item in series
       li
-        a(href=`/series/${item.id}/all`)
+        a(href=`/series/${item.id}`)
           h4 #{item.id} series &raquo;
           span= item.description
     li
@@ -18,6 +18,6 @@ block content
     li
       a(href='/series/all/out-of-service') All buses #{oosTitle}&nbsp;&raquo;
     li
-      a(href='/series/all/all') All buses &raquo;
+      a(href='/series/all') All buses &raquo;
     li
-      a(href='/roster/') Garage rosters &raquo;
+      a(href='/roster') Garage rosters &raquo;

@@ -4,13 +4,13 @@ var router = express.Router();
 var db = require('../db');
 var utils = require('../utils');
 
-router.get('/:series/:filter', function(req, res, next) {
+router.get('/:series/:filter?', function(req, res, next) {
   const now = db.getDbDateTime();
   const oosTitle = `${utils.secondsToTitleStr(process.env.OUT_OF_SERVICE_THRESHOLD_SEC, true)} out of service`;
   const staleTitle = `${utils.secondsToTitleStr(process.env.STALE_THRESHOLD_SEC, true)} out of service`;
   
-  let allowColor = false;
-  let filter;
+  let allowColor = true;
+  let filter = 'all';
   let series;
   let title = 'All buses';
   let whereClause = '';
@@ -30,26 +30,24 @@ router.get('/:series/:filter', function(req, res, next) {
   
   switch (req.params.filter) {
     case 'in-service':
+    allowColor = false;
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} ${now} - lastSeen < ${process.env.IN_SERVICE_THRESHOLD_SEC}`;
     title = `${title} currently in service`;
     break;
     case 'out-of-service':
+    allowColor = false;
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} (${now} - lastSeen > ${process.env.OUT_OF_SERVICE_THRESHOLD_SEC} or lastSeen is null)`;
     title = `${title} ${oosTitle}`;
     break;
     case 'stale':
-    allowColor = true;
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} (${now} - lastSeen > ${process.env.STALE_THRESHOLD_SEC} or lastSeen is null)`;
     title = `${title} ${staleTitle}`;
     break;
     case 'note':
-    allowColor = true;
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} note is not null and note != ''`;
     title = `${title} with notes`;
     break;
     default:
-    allowColor = true;
-    filter = 'all';
     if (series) {
       title = `All ${title}`;
     }
@@ -73,7 +71,7 @@ router.get('/:series/:filter', function(req, res, next) {
     oosTitle,
     staleTitle,
     buses,
-    backUrl: series ? filter !== 'all' ? `/series/${series.id}/all` : '/' : '/',
+    backUrl: series ? filter !== 'all' ? `/series/${series.id}` : '/' : '/',
     filter,
     series,
     busCount: buses.length,
