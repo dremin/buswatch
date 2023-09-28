@@ -156,7 +156,7 @@ exports.postNewBus = async (bus) => {
   }
   
   const body = {
-    content: `Bus **${bus.vid}** has entered service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)}** garage (Block ID: ${bus.tablockid})`
+    content: `Bus **${bus.vid}** has entered service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)} Garage** (Block ID: ${bus.tablockid})`
   }
   
   const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
@@ -168,6 +168,9 @@ exports.postNewBus = async (bus) => {
       console.log('Error posting to webhook', error);
     }
   }
+  
+  // snooze to prevent rate limiting
+  await new Promise(r => setTimeout(r, 2000));
 }
 
 const secondsToStr = (seconds) => {
@@ -229,7 +232,7 @@ exports.postRevivedBus = async (bus, secondsSince) => {
   }
   
   const body = {
-    content: `Bus **${bus.vid}** has returned to service on route **${bus.rt}** after being out of service for **${secondsToStr(secondsSince)}**`
+    content: `Bus **${bus.vid}** has returned to service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)} Garage** after being out of service for **${secondsToStr(secondsSince)}**`
   }
   
   const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
