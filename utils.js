@@ -87,12 +87,12 @@ exports.decodeGarage = (blockId, expand) => {
   const dashIndex = blockId.indexOf('-');
   
   if (dashIndex < 0 || blockId.length < 2) {
-    return 'Unknown';
+    return expand ? 'Unknown' : '';
   }
   
   const encodedGarage = blockId.substring(dashIndex + 1, dashIndex + 2);
   let garage = '';
-  let expandedGarage = '';
+  let expandedGarage = 'Unknown';
   
   // use block id to determine garage
   const decoded = exports.garages.find(g => g.encoded == encodedGarage);

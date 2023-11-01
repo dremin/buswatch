@@ -37,7 +37,7 @@ const fetchBusData = async () => {
   // Update the database
   for (vehicle in vehicles) {
     const bus = vehicles[vehicle];
-    const garage = utils.decodeGarage(bus.tablockid, false);
+    let garage = utils.decodeGarage(bus.tablockid, false);
     
     if (bus.vid < 10) {
       // filter out bogus data
@@ -50,6 +50,10 @@ const fetchBusData = async () => {
       // check if we should send any change alerts
       if (utils.isOutOfService(now, existingBus.lastSeen, process.env.OUT_OF_SERVICE_ALERT_THRESHOLD_SEC)) {
         await utils.postRevivedBus(bus, existingBus.lastSeen ? now - existingBus.lastSeen : 0);
+      }
+      // use existing garage if new is missing
+      if (!garage) {
+        garage = existingBus.garage;
       }
     }
     
