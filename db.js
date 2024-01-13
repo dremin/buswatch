@@ -37,6 +37,7 @@ function createDatabase() {
       blockId text,
       garage text,
       note text,
+      oosNoted integer,
       primary key(vid)
     );
     `).run();

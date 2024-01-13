@@ -248,3 +248,26 @@ exports.postRevivedBus = async (bus, secondsSince) => {
   // snooze to prevent rate limiting
   await new Promise(r => setTimeout(r, 2000));
 }
+
+exports.postOutOfServiceBus = async (bus) => {
+  if (!process.env.NEW_BUS_WEBHOOK_URL) {
+    return;
+  }
+  
+  const body = {
+    content: `Bus **${bus.vid}** has been not been seen in service since **${exports.epochToDisplay(bus.lastSeen)}**`
+  }
+  
+  const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
+  
+  for (urlIndex in webhookUrls) {
+    try {
+      await axios.post(webhookUrls[urlIndex], body);
+    } catch (error) {
+      console.log('Error posting to webhook', error);
+    }
+  }
+  
+  // snooze to prevent rate limiting
+  await new Promise(r => setTimeout(r, 2000));
+}

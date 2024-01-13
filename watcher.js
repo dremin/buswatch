@@ -58,12 +58,22 @@ const fetchBusData = async () => {
     }
     
     // common case, update existing bus
-    const updateResult = db.query('update buses set lastSeen = ?, route = ?, blockid = ?, garage = ? where vid = ?', true, [ now, bus.rt, bus.tablockid, garage, bus.vid ]);
+    const updateResult = db.query('update buses set lastSeen = ?, route = ?, blockid = ?, garage = ?, oosNoted = 0 where vid = ?', true, [ now, bus.rt, bus.tablockid, garage, bus.vid ]);
     
     if (updateResult.changes < 1) {
       // missing row -> new bus!
-      db.query('insert into buses (vid, firstSeen, lastSeen, route, blockId, garage) values (?, ?, ?, ?, ?, ?)', true, [ bus.vid, now, now, bus.rt, bus.tablockid, garage ]);
+      db.query('insert into buses (vid, firstSeen, lastSeen, route, blockId, garage, oosNoted) values (?, ?, ?, ?, ?, ?, 0)', true, [ bus.vid, now, now, bus.rt, bus.tablockid, garage ]);
       await utils.postNewBus(bus);
+    }
+  }
+  
+  // Detect newly out-of-service buses
+  const updatedBuses = db.query(`select * from buses where lastSeen is not null and oosNoted <> 1 order by vid asc`, false);
+  for (const bus of updatedBuses) {
+    if (utils.isOutOfService(now, bus.lastSeen, process.env.OUT_OF_SERVICE_ALERT_THRESHOLD_SEC)) {
+      // Mark as noted in the database so we don't alert again
+      const updateResult = db.query('update buses set oosNoted = 1 where vid = ?', true, [ bus.vid ]);
+      await utils.postOutOfServiceBus(bus);
     }
   }
   
