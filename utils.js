@@ -84,15 +84,20 @@ exports.garages = [
 ];
 
 exports.decodeGarage = (blockId, expand) => {
+  let garage = '';
+  let expandedGarage = 'Unknown';
+  
+  if (!blockId) {
+    return expand ? expandedGarage : garage;
+  }
+  
   const dashIndex = blockId.indexOf('-');
   
   if (dashIndex < 0 || blockId.length < 2) {
-    return expand ? 'Unknown' : '';
+    return expand ? expandedGarage : garage;
   }
   
   const encodedGarage = blockId.substring(dashIndex + 1, dashIndex + 2);
-  let garage = '';
-  let expandedGarage = 'Unknown';
   
   // use block id to determine garage
   const decoded = exports.garages.find(g => g.encoded == encodedGarage);
@@ -226,13 +231,21 @@ exports.secondsToTitleStr = (seconds, greater) => {
   return components.join(", ");
 }
 
-exports.postRevivedBus = async (bus, secondsSince) => {
+exports.postRevivedBus = async (bus, existingBus, now) => {
   if (!process.env.NEW_BUS_WEBHOOK_URL) {
     return;
   }
   
+  const secondsSince = existingBus.lastSeen ? now - existingBus.lastSeen : 0;
+  const previousGarage = exports.decodeGarage(existingBus.blockId, true);
+  const newGarage = exports.decodeGarage(bus.tablockid, true);
+  
   const body = {
-    content: `Bus **${bus.vid}** has returned to service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)} Garage** after being out of service for **${secondsToStr(secondsSince)}**`
+    content: `Bus **${bus.vid}** has returned to service on route **${bus.rt}** out of **${newGarage} Garage** after being out of service for **${secondsToStr(secondsSince)}**`
+  }
+  
+  if (newGarage !== 'Unknown' && previousGarage !== 'Unknown' && newGarage !== previousGarage) {
+    body.content = `${body.content}, moved from **${previousGarage} Garage**`;
   }
   
   const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
@@ -255,7 +268,7 @@ exports.postOutOfServiceBus = async (bus) => {
   }
   
   const body = {
-    content: `Bus **${bus.vid}** has been not been seen in service since **${exports.epochToDisplay(bus.lastSeen)}**`
+    content: `Bus **${bus.vid}** has been not been seen in service since **${exports.epochToDisplay(bus.lastSeen)}** on route **${bus.route}** out of **${exports.decodeGarage(bus.blockId, true)} Garage**`
   }
   
   const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');

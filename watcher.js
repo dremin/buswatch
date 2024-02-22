@@ -49,7 +49,7 @@ const fetchBusData = async () => {
     if (existingBus) {
       // check if we should send any change alerts
       if (utils.isOutOfService(now, existingBus.lastSeen, process.env.OUT_OF_SERVICE_ALERT_THRESHOLD_SEC)) {
-        await utils.postRevivedBus(bus, existingBus.lastSeen ? now - existingBus.lastSeen : 0);
+        await utils.postRevivedBus(bus, existingBus, now);
       }
       // use existing garage if new is missing
       if (!garage) {
