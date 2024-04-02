@@ -1,0 +1,11 @@
+extends layout
+include header
+
+block content
+  +header(backUrl, title, subtitle)
+  ul
+    each route in routes
+      li
+        a(href=`/route/${route.route}`)
+          h4 #{route.route}: #{route.name} &raquo;
+          span #{route.busCount} bus#{route.busCount != 1 ? 'es' : ''} in service

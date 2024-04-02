@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
     garages.push(garage);
   }
   
-  res.render('roster', {
+  res.render('garages', {
     title,
     garages,
     subtitle: `To improve accuracy, only buses in service within the last ${utils.secondsToTitleStr(process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC, false)} are listed.`,
@@ -32,12 +32,12 @@ router.get('/:sticker/:filter?', function(req, res, next) {
   const oosTitle = `${utils.secondsToTitleStr(process.env.OUT_OF_SERVICE_THRESHOLD_SEC, true)} out of service`;
   const staleTitle = `${utils.secondsToTitleStr(process.env.STALE_THRESHOLD_SEC, true)} out of service`;
   
-  let garage = { ...utils.garages.find(g => g.sticker == req.params.sticker), series: [ ...utils.series ] };
+  const garage = { ...utils.garages.find(g => g.sticker == req.params.sticker) };
   
   let allowColor = true;
   let filter = 'all';
   let title = `${garage.name} Garage`;
-  let whereClause = `where lastSeen >= ${now - process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC}`;
+  let whereClause = `where garage = '${garage.sticker}' and lastSeen >= ${now - process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC}`;
   
   if (req.params.filter) {
     filter = req.params.filter;
@@ -64,29 +64,22 @@ router.get('/:sticker/:filter?', function(req, res, next) {
     break;
   }
   
-  let buses = db.query(`select * from buses ${whereClause} order by vid asc`, false);
+  const buses = db.query(`select * from buses ${whereClause} order by vid asc`, false);
+  const busSeries = utils.mapBusSeries(buses, allowColor, now);
   
-  for (const s in garage.series) {
-    garage.series[s].buses = buses.filter(bus => bus.garage == garage.sticker && bus.vid >= garage.series[s].min && bus.vid <= garage.series[s].max).map(bus => {
-      return {
-        ...bus,
-        firstSeen: utils.epochToDisplay(bus.firstSeen),
-        lastSeen: utils.epochToDisplay(bus.lastSeen),
-        isInService: allowColor && utils.isInService(now, bus.lastSeen),
-        isOutOfService: allowColor && utils.isOutOfService(now, bus.lastSeen),
-      };
-    });
-    garage.series[s].busCount = garage.series[s].buses.length;
-  }
-  garage.busCount = garage.series.reduce((acc, cur) => acc + cur.busCount, 0);
-  
-  res.render('roster-series', {
+  res.render('buses-split', {
     title,
     oosTitle,
     staleTitle,
-    garage,
+    filterTitle: garage.name,
+    showFilters: true,
+    showRoute: true,
+    showGarage: false,
     filter,
-    backUrl: filter !== 'all' ? `/roster/${req.params.sticker}` : '/roster/',
+    busSeries,
+    totalCount: busSeries.reduce((acc, cur) => acc + cur.busCount, 0),
+    thisUrl: `/garage/${garage.sticker}`,
+    backUrl: filter !== 'all' ? `/garage/${garage.sticker}` : '/garage/',
   });
 });
 

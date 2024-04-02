@@ -4,7 +4,7 @@ const sqlite3 = require('better-sqlite3');
 const dbFile = process.env.HOME + '/buswatch.db';
 var db;
 
-function runQuery(req, isNonQuery, params) {
+function runQuery(req, isNonQuery, params = []) {
   if (!db) {
     init();
   }
@@ -18,7 +18,7 @@ function runQuery(req, isNonQuery, params) {
     if (isNonQuery) {
       return db.prepare(req).run(...params);
     } else {
-      return db.prepare(req).all();
+      return db.prepare(req).all(...params);
     }
   } catch (err) {
     console.log("Error performing query", err);
@@ -39,6 +39,11 @@ function createDatabase() {
       note text,
       oosNoted integer,
       primary key(vid)
+    );
+    create table routes (
+      route text not null,
+      name text,
+      primary key(route)
     );
     `).run();
     console.log('Initialized database successfully.');

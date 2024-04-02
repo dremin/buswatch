@@ -1,0 +1,25 @@
+mixin buslist(buses, showRoute, showGarage)
+  table(cellspacing='0')
+    tr
+      th Bus
+      th First Seen
+      th Last Seen
+      if showRoute
+        th Route
+      th Block ID
+      if showGarage
+        th Garage
+    each bus in buses
+      tr(class= bus.isInService ? 'in-service' : bus.isOutOfService ? 'out-of-service' : '')
+        if bus.note
+          td
+            a(onclick=`showNote('${bus.vid}', '${bus.note}')`) #{bus.vid}
+        else
+          td= bus.vid
+        td= bus.firstSeen
+        td= bus.lastSeen
+        if showRoute
+          td= bus.route
+        td= bus.blockId
+        if showGarage
+          td= bus.garage

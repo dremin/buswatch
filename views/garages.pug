@@ -1,14 +1,11 @@
 extends layout
+include header
 
 block content
-  nav
-    a(href=backUrl) &lsaquo; Back
-    h1= title
-  header
-    p= subtitle
+  +header(backUrl, title, subtitle)
   ul
     each garage in garages
       li
-        a(href=`/roster/${garage.sticker}`)
+        a(href=`/garage/${garage.sticker}`)
           h4 #{garage.name} Garage &raquo;
           span #{garage.busCount} bus#{garage.busCount != 1 ? 'es' : ''}

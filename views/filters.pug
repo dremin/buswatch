@@ -1,0 +1,15 @@
+mixin filters(thisUrl, filterTitle, staleTitle, oosTitle)
+  div(id='filtersPlaceholder')
+    ul
+      li
+        a(onclick=`showHideDivs('filters', 'filtersPlaceholder')`) Show filters
+  div(id='filters')
+    ul
+      li
+        a(href=`${thisUrl}/in-service`) #{filterTitle} buses currently in service&nbsp;&raquo;
+      li
+        a(href=`${thisUrl}/stale`) #{filterTitle} buses #{staleTitle}&nbsp;&raquo;
+      li
+        a(href=`${thisUrl}/out-of-service`) #{filterTitle} buses #{oosTitle}&nbsp;&raquo;
+      li
+        a(href=`${thisUrl}/note`) #{filterTitle} buses with notes&nbsp;&raquo;

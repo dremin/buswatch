@@ -56,26 +56,38 @@ router.get('/:series/:filter?', function(req, res, next) {
   
   let buses = db.query(`select * from buses ${whereClause} order by vid asc`, false);
   
-  buses = buses.map(bus => {
-    return {
-      ...bus,
-      firstSeen: utils.epochToDisplay(bus.firstSeen),
-      lastSeen: utils.epochToDisplay(bus.lastSeen),
-      isInService: allowColor && utils.isInService(now, bus.lastSeen),
-      isOutOfService: allowColor && utils.isOutOfService(now, bus.lastSeen),
-    };
-  });
-  
-  res.render('buses', {
-    title,
-    oosTitle,
-    staleTitle,
-    buses,
-    backUrl: series ? filter !== 'all' ? `/series/${series.id}` : '/' : '/',
-    filter,
-    series,
-    busCount: buses.length,
-  });
+  if (series) {
+    buses = utils.mapBusDisplay(buses, allowColor, now);
+    res.render('buses', {
+      title,
+      oosTitle,
+      staleTitle,
+      filterTitle: `${series.id}-series`,
+      showFilters: true,
+      filter,
+      series,
+      buses,
+      totalCount: buses.length,
+      thisUrl: `/series/${series.id}`,
+      backUrl: filter !== 'all' ? `/series/${series.id}` : '/',
+    });
+  } else {
+    const busSeries = utils.mapBusSeries(buses, allowColor, now);
+    res.render('buses-split', {
+      title,
+      oosTitle,
+      staleTitle,
+      filterTitle: `All`,
+      showFilters: true,
+      showRoute: true,
+      showGarage: true,
+      filter,
+      busSeries,
+      totalCount: busSeries.reduce((acc, cur) => acc + cur.busCount, 0),
+      thisUrl: `/series/all`,
+      backUrl: filter !== 'all' ? `/series/all` : '/',
+    });
+  }
 });
 
 module.exports = router;

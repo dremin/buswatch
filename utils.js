@@ -110,7 +110,7 @@ exports.decodeGarage = (blockId, expand) => {
   return expand ? expandedGarage : garage;
 }
 
-exports.epochToDisplay = (epoch) => {
+const epochToDisplay = (epoch) => {
   const options = {
     timeZone: 'America/Chicago',
     month: "numeric",
@@ -268,7 +268,7 @@ exports.postOutOfServiceBus = async (bus) => {
   }
   
   const body = {
-    content: `Bus **${bus.vid}** has been not been seen in service since **${exports.epochToDisplay(bus.lastSeen)}** on route **${bus.route}** out of **${exports.decodeGarage(bus.blockId, true)} Garage**`
+    content: `Bus **${bus.vid}** has not been seen in service since **${epochToDisplay(bus.lastSeen)}** on route **${bus.route}** out of **${exports.decodeGarage(bus.blockId, true)} Garage**`
   }
   
   const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
@@ -283,4 +283,25 @@ exports.postOutOfServiceBus = async (bus) => {
   
   // snooze to prevent rate limiting
   await new Promise(r => setTimeout(r, 2000));
+}
+
+exports.mapBusDisplay = (buses, allowColor, now) => {
+  return buses.map(bus => ({
+    ...bus,
+    firstSeen: epochToDisplay(bus.firstSeen),
+    lastSeen: epochToDisplay(bus.lastSeen),
+    isInService: allowColor && exports.isInService(now, bus.lastSeen),
+    isOutOfService: allowColor && exports.isOutOfService(now, bus.lastSeen),
+  }));
+}
+
+exports.mapBusSeries = (buses, allowColor, now) => {
+  const busSeries = [ ...exports.series ];
+  
+  for (const s in busSeries) {
+    busSeries[s].buses = exports.mapBusDisplay(buses.filter(bus => bus.vid >= busSeries[s].min && bus.vid <= busSeries[s].max), allowColor, now);
+    busSeries[s].busCount = busSeries[s].buses.length;
+  }
+  
+  return busSeries;
 }

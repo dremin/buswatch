@@ -20,10 +20,14 @@ const fetchBusData = async () => {
     return;
   }
   
+  // Save route data to the database
+  saveRoutes(routes);
+  
   // Get each vehicle for each route. A vehicle appears on one route at a time.
   // Chunk up to ten routes per API request.
-  for (let i = 0; i < routes.length; i += 10) {
-    const routesChunk = routes.slice(i, i + 10);
+  const routeNums = routes.map(route => route.rt);
+  for (let i = 0; i < routeNums.length; i += 10) {
+    const routesChunk = routeNums.slice(i, i + 10);
     const routeVehicles = await getRouteVehicles(routesChunk.join());
     
     for (vehicle in routeVehicles) {
@@ -80,11 +84,40 @@ const fetchBusData = async () => {
   console.log(`Updated bus data at ${new Date()}`);
 }
 
+const saveRoutes = (routes) => {
+  // Get the current state so that we can compare
+  const existingRoutes = db.query(`select * from routes order by route asc`, false);
+  
+  for (const route of routes) {
+    const exists = existingRoutes.find(r => r.route == route.rt);
+    
+    if (!exists) {
+      // New route
+      db.query('insert into routes (route, name) values (?, ?)', true, [ route.rt, route.rtnm ]);
+      continue;
+    }
+    
+    if (exists.name !== route.rtnm) {
+      // Route name changed
+      db.query('update routes set name = ? where route = ?', true, [ route.rtnm, exists.route ]);
+    }
+  }
+  
+  // Clean up any removed routes
+  for (const existing of existingRoutes) {
+    const stillExists = routes.find(r => r.rt == existing.route);
+    
+    if (!stillExists) {
+      db.query('delete from routes where route = ?', true, [ existing.route ]);
+    }
+  }
+}
+
 const getRoutes = async () => {
   let routes = [];
   const routesResponse = await busTimeRequest('getroutes', {});
   
-  routes = routesResponse['bustime-response']?.routes?.map(route => route.rt);
+  routes = routesResponse['bustime-response']?.routes;
   
   return routes;
 }

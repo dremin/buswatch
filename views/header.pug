@@ -1,0 +1,7 @@
+mixin header(backUrl, title, subtitle)
+  nav
+    a(href=backUrl) &lsaquo; Back
+    h1= title
+  if subtitle
+    header
+      p= subtitle

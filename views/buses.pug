@@ -1,42 +1,11 @@
 extends layout
+include buslist
+include header
+include filters
 
 block content
-  nav
-    a(href=backUrl) &lsaquo; Back
-    h1= title
-  if filter == 'all' && series
-    div(id='filtersPlaceholder')
-      ul
-        li
-          a(onclick=`showHideDivs('filters', 'filtersPlaceholder')`) Show filters
-    div(id='filters')
-      ul
-        li
-          a(href=`/series/${series.id}/in-service`) #{series.id}-series buses currently in service&nbsp;&raquo;
-        li
-          a(href=`/series/${series.id}/stale`) #{series.id}-series buses #{staleTitle}&nbsp;&raquo;
-        li
-          a(href=`/series/${series.id}/out-of-service`) #{series.id}-series buses #{oosTitle}&nbsp;&raquo;
-        li
-          a(href=`/series/${series.id}/note`) #{series.id}-series buses with notes&nbsp;&raquo;
-  table(cellspacing='0')
-    tr
-      th Bus
-      th First Seen
-      th Last Seen
-      th Route
-      th Block ID
-      th Garage
-    each bus in buses
-      tr(class= bus.isInService ? 'in-service' : bus.isOutOfService ? 'out-of-service' : '')
-        if bus.note
-          td
-            a(onclick=`showNote('${bus.vid}', '${bus.note}')`) #{bus.vid}
-        else
-          td= bus.vid
-        td= bus.firstSeen
-        td= bus.lastSeen
-        td= bus.route
-        td= bus.blockId
-        td= bus.garage
-  div(class='tableCount') #{busCount} bus#{busCount != 1 ? 'es' : ''}
+  +header(backUrl, title)
+  if filter == 'all' && showFilters
+    +filters(thisUrl, filterTitle, staleTitle, oosTitle)
+  +buslist(buses, true, true)
+  div(class='tableCount') #{totalCount} bus#{totalCount != 1 ? 'es' : ''}

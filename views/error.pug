@@ -1,6 +1,10 @@
 extends layout
 
 block content
-  h1= message
-  h2= error.status
+  header
+    h1= message
+    p= error.status
   pre #{error.stack}
+  ul
+    li
+      a(href=`/`) Buswatch Home&nbsp;&raquo;

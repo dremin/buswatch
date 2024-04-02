@@ -1,0 +1,14 @@
+extends layout
+include buslist
+include header
+include filters
+
+block content
+  +header(backUrl, title)
+  if filter == 'all' && showFilters
+    +filters(thisUrl, filterTitle, staleTitle, oosTitle)
+  each series in busSeries
+    if series.busCount > 0
+      h2 #{series.id} series (#{series.busCount} bus#{series.busCount != 1 ? 'es' : ''})
+      +buslist(series.buses, showRoute, showGarage)
+  div(class='tableCount') #{totalCount} total bus#{totalCount != 1 ? 'es' : ''}
