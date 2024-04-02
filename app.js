@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/series/', seriesRouter);
-app.use('/garage/', garageRouter);
+app.use('/roster/', garageRouter);
 app.use('/route/', routeRouter);
 
 // catch 404 and forward to error handler

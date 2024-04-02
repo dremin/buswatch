@@ -78,8 +78,8 @@ router.get('/:sticker/:filter?', function(req, res, next) {
     filter,
     busSeries,
     totalCount: busSeries.reduce((acc, cur) => acc + cur.busCount, 0),
-    thisUrl: `/garage/${garage.sticker}`,
-    backUrl: filter !== 'all' ? `/garage/${garage.sticker}` : '/garage/',
+    thisUrl: `/roster/${garage.sticker}`,
+    backUrl: filter !== 'all' ? `/roster/${garage.sticker}` : '/roster/',
   });
 });
 
