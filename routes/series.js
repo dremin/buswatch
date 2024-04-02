@@ -15,13 +15,15 @@ router.get('/:series/:filter?', function(req, res, next) {
   let title = 'All buses';
   let whereClause = '';
   
-  if (req.params.series !== 'all') {
+  if (!req.params.series.startsWith('all')) {
     series = utils.series.find(busSeries => busSeries.id === req.params.series);
   }
   
   if (series) {
     whereClause = `where vid >= ${series.min} and vid <= ${series.max}`;
     title = `${series.id}-series buses`;
+  } else if (req.params.series !== 'all') {
+    title = 'All buses by series';
   }
   
   if (req.params.filter) {
@@ -56,36 +58,45 @@ router.get('/:series/:filter?', function(req, res, next) {
   
   let buses = db.query(`select * from buses ${whereClause} order by vid asc`, false);
   
+  const renderOptions = {
+    title,
+    oosTitle,
+    staleTitle,
+    showFilters: true,
+    filter,
+  };
+  
   if (series) {
     buses = utils.mapBusDisplay(buses, allowColor, now);
     res.render('buses', {
-      title,
-      oosTitle,
-      staleTitle,
+      ...renderOptions,
       filterTitle: `${series.id}-series`,
-      showFilters: true,
-      filter,
-      series,
       buses,
       totalCount: buses.length,
       thisUrl: `/series/${series.id}`,
       backUrl: filter !== 'all' ? `/series/${series.id}` : '/',
     });
+  } else if (req.params.series === 'all') {
+    buses = utils.mapBusDisplay(buses, allowColor, now);
+    res.render('buses', {
+      ...renderOptions,
+      filterTitle: `All`,
+      buses,
+      totalCount: buses.length,
+      thisUrl: `/series/all`,
+      backUrl: filter !== 'all' ? `/series/all` : '/',
+    });
   } else {
     const busSeries = utils.mapBusSeries(buses, allowColor, now);
     res.render('buses-split', {
-      title,
-      oosTitle,
-      staleTitle,
+      ...renderOptions,
       filterTitle: `All`,
-      showFilters: true,
       showRoute: true,
       showGarage: true,
-      filter,
       busSeries,
       totalCount: busSeries.reduce((acc, cur) => acc + cur.busCount, 0),
-      thisUrl: `/series/all`,
-      backUrl: filter !== 'all' ? `/series/all` : '/',
+      thisUrl: `/series/all-series`,
+      backUrl: filter !== 'all' ? `/series/all-series` : '/',
     });
   }
 });

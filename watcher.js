@@ -43,7 +43,7 @@ const fetchBusData = async () => {
     const bus = vehicles[vehicle];
     let garage = utils.decodeGarage(bus.tablockid, false);
     
-    if (bus.vid < 10) {
+    if (bus.vid < 100) {
       // filter out bogus data
       continue;
     }
