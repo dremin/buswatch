@@ -293,4 +293,8 @@ section.accordion input:checked + label::before {
   td {
     padding: 10px 5px;
   }
+  
+  section.accordion input:checked + label {
+    padding: 10px 20px;
+  }
 }
