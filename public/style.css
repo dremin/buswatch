@@ -124,13 +124,6 @@ nav a {
   flex-shrink: 0;
 }
 
-h2 {
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  margin: 20px 0px 10px;
-}
-
 #filters {
   display: none;
 }
@@ -155,7 +148,7 @@ th {
   top: 0;
 }
 
-tr:nth-child(odd){
+tr:nth-child(odd) {
   background-color: #eee;
 }
 
@@ -188,21 +181,77 @@ td a {
   text-align: center;
 }
 
+/* Accordion styles */
+
+section.accordion {
+  border: 1px solid #2166b1;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+section.accordion label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+section.accordion label:hover {
+  color: #2166b1;
+}
+
+section.accordion label span {
+  color: #666;
+  font-size: 16px;
+  font-weight: normal;
+  padding-left: 10px;
+}
+
+section.accordion label::before {
+  content: "\25B6";
+  display: inline-block;
+  font-size: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
+  text-align: center;
+  transform: rotate(0deg);
+  transition: transform 0.15s;
+}
+
+section.accordion input {
+  display: none;
+}
+
+section.accordion input + label + table {
+  display: none;
+  margin-bottom: 10px;
+}
+
+section.accordion input:checked + label + table {
+  display: table;
+}
+
+section.accordion input:checked + label::before {
+  transform: rotate(90deg);
+}
+
 @media (prefers-color-scheme: dark) {
   html, body {
     background-color: #111;
     color: #ddd;
   }
   
-  header p, ul li a span {
+  header p, ul li a span, section.accordion label span {
     color: #999;
   }
   
-  nav a, ul li a {
+  nav a, ul li a, section.accordion label:hover {
     color: #2982e0;
   }
   
-  tr:nth-child(odd){
+  tr:nth-child(odd) {
     background-color: #222;
   }
   
@@ -233,7 +282,7 @@ td a {
     margin: 10px;
   }
   
-  ul li a {
+  ul li a, section.accordion {
     margin: 10px;
   }
   

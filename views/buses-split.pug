@@ -9,6 +9,9 @@ block content
     +filters(thisUrl, filterTitle, staleTitle, oosTitle)
   each series in busSeries
     if series.busCount > 0
-      h2 #{series.id} series (#{series.busCount} bus#{series.busCount != 1 ? 'es' : ''})
-      +buslist(series.buses, showRoute, showGarage)
+      section(class='accordion')
+        input(type='checkbox', id=series.id)
+        label(for=series.id) #{series.id} series
+          span #{series.busCount} bus#{series.busCount != 1 ? 'es' : ''}
+        +buslist(series.buses, showRoute, showGarage)
   div(class='tableCount') #{totalCount} total bus#{totalCount != 1 ? 'es' : ''}
