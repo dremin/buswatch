@@ -10,7 +10,7 @@ block content
   each series in busSeries
     if series.busCount > 0
       section(class='accordion')
-        input(type='checkbox', id=series.id)
+        input(type='checkbox', id=series.id, checked=totalCount < 20)
         label(for=series.id) #{series.id} series
           span #{series.busCount} bus#{series.busCount != 1 ? 'es' : ''}
         +buslist(series.buses, showRoute, showGarage)
