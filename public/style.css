@@ -282,7 +282,7 @@ section.accordion input:checked + label::before {
     margin: 10px;
   }
   
-  ul li a, section.accordion {
+  ul li a, section.accordion:has(input:not(:checked)) {
     margin: 10px;
   }
   
