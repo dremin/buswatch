@@ -5,43 +5,50 @@ exports.series = [
     id: '600',
     description: '2020-2022 Proterra BE40 & ZX5',
     min: 600,
-    max: 699
+    max: 699,
+    image: 'https://www.transitchicago.com/assets/1/6/GalleryMainDimensionId/RS47511_63_eBus_-_2023-05-16_-_Electric_Bus_63rd_St_-03-scr.jpg'
   },
   {
     id: '700',
     description: '2014 New Flyer XE40',
     min: 700,
-    max: 799
+    max: 799,
+    image: 'https://chicagobus.org/system/photos/288/large/IMG_33661.JPG'
   },
   {
     id: '1000',
     description: '2005-2008 New Flyer D40LF',
     min: 1000,
-    max: 2029
+    max: 2029,
+    image: 'https://chicagobus.org/system/photos/56/large/IMG_6661.JPG.jpg'
   },
   {
     id: '4000',
     description: '2008-2009 New Flyer DE60LF',
     min: 4000,
-    max: 4207
+    max: 4207,
+    image: 'https://chicagobus.org/system/photos/347/large/image.jpeg'
   },
   {
     id: '4300',
     description: '2012-2013 New Flyer DE60LFR & D60LFR',
     min: 4300,
-    max: 4399
+    max: 4399,
+    image: 'https://chicagobus.org/system/photos/250/large/DSC00925.jpg'
   },
   {
     id: '7900',
     description: '2014-2018 Nova Bus LFS',
     min: 7900,
-    max: 8349
+    max: 8349,
+    image: 'https://chicagobus.org/system/photos/359/large/image.jpeg'
   },
   {
     id: '8350',
     description: '2022-2025 Nova Bus LFS',
     min: 8350,
-    max: 8949
+    max: 8949,
+    image: 'https://i.imgur.com/D2RiIpv.jpeg'
   },
 ];
 
@@ -208,6 +215,10 @@ exports.secondsToTitleStr = (seconds, greater) => {
   return components.join(", ");
 }
 
+const vidToSeries = (vid) => {
+  return exports.series.find(series => vid >= series.min && vid <= series.max);
+}
+
 const postToWebhook = async (body) => {
   if (!process.env.NEW_BUS_WEBHOOK_URL) {
     return;
@@ -217,7 +228,7 @@ const postToWebhook = async (body) => {
   
   for (urlIndex in webhookUrls) {
     try {
-      await axios.post(webhookUrls[urlIndex], { embeds: [ body ] });
+      await axios.post(webhookUrls[urlIndex], body);
     } catch (error) {
       console.log('Error posting to webhook', error);
     }
@@ -229,20 +240,9 @@ const postToWebhook = async (body) => {
 
 exports.postNewBus = async (bus) => {
   await postToWebhook({
-    color: 3331915,
-    title: `Bus ${bus.vid} has entered service out of ${exports.decodeGarage(bus.tablockid, true)} Garage`,
-    fields: [
-      {
-        name: "Route",
-        value: bus.rt,
-        inline: true
-      },
-      {
-        name: "Block ID",
-        value: bus.tablockid,
-        inline: true
-      }
-    ]
+    username: 'Buswatch',
+    avatar_url: vidToSeries(bus.vid).image,
+    content: `Bus **${bus.vid}** has entered service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)} Garage** (Block ID: ${bus.tablockid})`
   });
 }
 
@@ -252,41 +252,27 @@ exports.postRevivedBus = async (bus, existingBus, now) => {
   const newGarage = exports.decodeGarage(bus.tablockid, true);
   
   const body = {
-    color: 689407,
-    title: `Bus ${bus.vid} has returned after being out of service for ${secondsToStr(secondsSince)}`,
-    fields: [
-      {
-        name: "Route",
-        value: bus.rt,
-        inline: true
-      },
-      {
-        name: "Block ID",
-        value: bus.tablockid,
-        inline: true
-      },
-      {
-        name: "Garage",
-        value: newGarage,
-        inline: true
-      },
-      {
-        name: "Last Seen",
-        value: epochToDisplay(existingBus.lastSeen),
-        inline: true
-      }
-    ]
+    username: 'Buswatch',
+    avatar_url: vidToSeries(bus.vid).image,
+    content: `Bus **${bus.vid}** has returned to service on route **${bus.rt}** out of **${newGarage} Garage** after being out of service for **${secondsToStr(secondsSince)}**`
   };
   
   if (newGarage !== 'Unknown' && previousGarage !== 'Unknown' && newGarage !== previousGarage) {
-    body.title = `${body.title}, moved from ${previousGarage} Garage`;
+    body.content = `${body.content}, moved from ${previousGarage} Garage`;
   }
   
   if (existingBus.note) {
-    body.fields.push({
-      name: "Notes",
-      value: existingBus.note.replaceAll('\\n', ' ')
-    });
+    body.embeds = [
+      {
+        color: 689407,
+        fields: [
+          {
+            name: "Notes",
+            value: existingBus.note.replaceAll('\\n', ' ')
+          }
+        ]
+      }
+    ];
   }
   
   await postToWebhook(body);
@@ -294,32 +280,23 @@ exports.postRevivedBus = async (bus, existingBus, now) => {
 
 exports.postOutOfServiceBus = async (bus) => {
   const body = {
-    color: 16729402,
-    title: `Bus ${bus.vid} has not been seen in service since ${epochToDisplay(bus.lastSeen)}`,
-    fields: [
-      {
-        name: "Route",
-        value: bus.route,
-        inline: true
-      },
-      {
-        name: "Block ID",
-        value: bus.blockId,
-        inline: true
-      },
-      {
-        name: "Garage",
-        value: exports.decodeGarage(bus.blockId, true),
-        inline: true
-      }
-    ]
+    username: 'Buswatch',
+    avatar_url: vidToSeries(bus.vid).image,
+    content: `Bus **${bus.vid}** has not been seen in service since **${epochToDisplay(bus.lastSeen)}** on route **${bus.route}** out of **${exports.decodeGarage(bus.blockId, true)} Garage**`
   };
   
   if (bus.note) {
-    body.fields.push({
-      name: "Notes",
-      value: bus.note.replaceAll('\\n', ' ')
-    });
+    body.embeds = [
+      {
+        color: 16729402,
+        fields: [
+          {
+            name: "Notes",
+            value: bus.note.replaceAll('\\n', ' ')
+          }
+        ]
+      }
+    ];
   }
   
   await postToWebhook(body);
