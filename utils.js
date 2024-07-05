@@ -155,29 +155,6 @@ exports.isOutOfService = (now, lastSeen, override) => {
   return now - lastSeen > process.env.OUT_OF_SERVICE_THRESHOLD_SEC;
 }
 
-exports.postNewBus = async (bus) => {
-  if (!process.env.NEW_BUS_WEBHOOK_URL) {
-    return;
-  }
-  
-  const body = {
-    content: `Bus **${bus.vid}** has entered service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)} Garage** (Block ID: ${bus.tablockid})`
-  }
-  
-  const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
-  
-  for (urlIndex in webhookUrls) {
-    try {
-      await axios.post(webhookUrls[urlIndex], body);
-    } catch (error) {
-      console.log('Error posting to webhook', error);
-    }
-  }
-  
-  // snooze to prevent rate limiting
-  await new Promise(r => setTimeout(r, 2000));
-}
-
 const secondsToStr = (seconds) => {
   if (seconds < 1) {
     return "a long time";
@@ -231,28 +208,16 @@ exports.secondsToTitleStr = (seconds, greater) => {
   return components.join(", ");
 }
 
-exports.postRevivedBus = async (bus, existingBus, now) => {
+const postToWebhook = async (body) => {
   if (!process.env.NEW_BUS_WEBHOOK_URL) {
     return;
-  }
-  
-  const secondsSince = existingBus.lastSeen ? now - existingBus.lastSeen : 0;
-  const previousGarage = exports.decodeGarage(existingBus.blockId, true);
-  const newGarage = exports.decodeGarage(bus.tablockid, true);
-  
-  const body = {
-    content: `Bus **${bus.vid}** has returned to service on route **${bus.rt}** out of **${newGarage} Garage** after being out of service for **${secondsToStr(secondsSince)}**`
-  }
-  
-  if (newGarage !== 'Unknown' && previousGarage !== 'Unknown' && newGarage !== previousGarage) {
-    body.content = `${body.content}, moved from **${previousGarage} Garage**`;
   }
   
   const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
   
   for (urlIndex in webhookUrls) {
     try {
-      await axios.post(webhookUrls[urlIndex], body);
+      await axios.post(webhookUrls[urlIndex], { embeds: [ body ] });
     } catch (error) {
       console.log('Error posting to webhook', error);
     }
@@ -262,27 +227,102 @@ exports.postRevivedBus = async (bus, existingBus, now) => {
   await new Promise(r => setTimeout(r, 2000));
 }
 
-exports.postOutOfServiceBus = async (bus) => {
-  if (!process.env.NEW_BUS_WEBHOOK_URL) {
-    return;
-  }
+exports.postNewBus = async (bus) => {
+  await postToWebhook({
+    color: 3331915,
+    title: `Bus ${bus.vid} has entered service out of ${exports.decodeGarage(bus.tablockid, true)} Garage`,
+    fields: [
+      {
+        name: "Route",
+        value: bus.rt,
+        inline: true
+      },
+      {
+        name: "Block ID",
+        value: bus.tablockid,
+        inline: true
+      }
+    ]
+  });
+}
+
+exports.postRevivedBus = async (bus, existingBus, now) => {
+  const secondsSince = existingBus.lastSeen ? now - existingBus.lastSeen : 0;
+  const previousGarage = exports.decodeGarage(existingBus.blockId, true);
+  const newGarage = exports.decodeGarage(bus.tablockid, true);
   
   const body = {
-    content: `Bus **${bus.vid}** has not been seen in service since **${epochToDisplay(bus.lastSeen)}** on route **${bus.route}** out of **${exports.decodeGarage(bus.blockId, true)} Garage**`
+    color: 689407,
+    title: `Bus ${bus.vid} has returned after being out of service for ${secondsToStr(secondsSince)}`,
+    fields: [
+      {
+        name: "Route",
+        value: bus.rt,
+        inline: true
+      },
+      {
+        name: "Block ID",
+        value: bus.tablockid,
+        inline: true
+      },
+      {
+        name: "Garage",
+        value: newGarage,
+        inline: true
+      },
+      {
+        name: "Last Seen",
+        value: epochToDisplay(existingBus.lastSeen),
+        inline: true
+      }
+    ]
+  };
+  
+  if (newGarage !== 'Unknown' && previousGarage !== 'Unknown' && newGarage !== previousGarage) {
+    body.title = `${body.title}, moved from ${previousGarage} Garage`;
   }
   
-  const webhookUrls = process.env.NEW_BUS_WEBHOOK_URL.split(';');
-  
-  for (urlIndex in webhookUrls) {
-    try {
-      await axios.post(webhookUrls[urlIndex], body);
-    } catch (error) {
-      console.log('Error posting to webhook', error);
-    }
+  if (existingBus.note) {
+    body.fields.push({
+      name: "Notes",
+      value: existingBus.note.replaceAll('\\n', ' ')
+    });
   }
   
-  // snooze to prevent rate limiting
-  await new Promise(r => setTimeout(r, 2000));
+  await postToWebhook(body);
+}
+
+exports.postOutOfServiceBus = async (bus) => {
+  const body = {
+    color: 16729402,
+    title: `Bus ${bus.vid} has not been seen in service since ${epochToDisplay(bus.lastSeen)}`,
+    fields: [
+      {
+        name: "Route",
+        value: bus.route,
+        inline: true
+      },
+      {
+        name: "Block ID",
+        value: bus.blockId,
+        inline: true
+      },
+      {
+        name: "Garage",
+        value: exports.decodeGarage(bus.blockId, true),
+        inline: true
+      }
+    ]
+  };
+  
+  if (bus.note) {
+    body.fields.push({
+      name: "Notes",
+      value: bus.note.replaceAll('\\n', ' ')
+    });
+  }
+  
+  await postToWebhook(body);
 }
 
 exports.mapBusDisplay = (buses, allowColor, now) => {
