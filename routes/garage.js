@@ -49,6 +49,10 @@ router.get('/:sticker/:filter?', function(req, res, next) {
     whereClause = `${whereClause} and ${now} - lastSeen < ${process.env.IN_SERVICE_THRESHOLD_SEC}`;
     title = `${garage.name} buses currently in service`;
     break;
+    case 'active':
+    whereClause = `${whereClause} and ${now} - lastSeen < ${process.env.STALE_THRESHOLD_SEC}`;
+    title = `${garage.name} buses not out of service`;
+    break;
     case 'out-of-service':
     allowColor = false;
     whereClause = `${whereClause} and (${now} - lastSeen > ${process.env.OUT_OF_SERVICE_THRESHOLD_SEC} or lastSeen is null)`;

@@ -36,6 +36,10 @@ router.get('/:series/:filter?', function(req, res, next) {
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} ${now} - lastSeen < ${process.env.IN_SERVICE_THRESHOLD_SEC}`;
     title = `${title} currently in service`;
     break;
+    case 'active':
+    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} ${now} - lastSeen < ${process.env.STALE_THRESHOLD_SEC}`;
+    title = `${title} not out of service`;
+    break;
     case 'out-of-service':
     allowColor = false;
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} (${now} - lastSeen > ${process.env.OUT_OF_SERVICE_THRESHOLD_SEC} or lastSeen is null)`;
