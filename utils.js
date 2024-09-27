@@ -117,7 +117,7 @@ exports.decodeGarage = (blockId, expand) => {
   return expand ? expandedGarage : garage;
 }
 
-const epochToDisplay = (epoch) => {
+exports.epochToDisplay = (epoch) => {
   const options = {
     timeZone: 'America/Chicago',
     month: "numeric",
@@ -215,7 +215,7 @@ exports.secondsToTitleStr = (seconds, greater) => {
   return components.join(", ");
 }
 
-const vidToSeries = (vid) => {
+exports.vidToSeries = (vid) => {
   return exports.series.find(series => vid >= series.min && vid <= series.max);
 }
 
@@ -241,7 +241,7 @@ const postToWebhook = async (body) => {
 exports.postNewBus = async (bus) => {
   await postToWebhook({
     username: 'Buswatch',
-    avatar_url: vidToSeries(bus.vid).image,
+    avatar_url: exports.vidToSeries(bus.vid).image,
     content: `Bus **${bus.vid}** has entered service on route **${bus.rt}** out of **${exports.decodeGarage(bus.tablockid, true)} Garage** (Block ID: ${bus.tablockid})`
   });
 }
@@ -253,7 +253,7 @@ exports.postRevivedBus = async (bus, existingBus, now) => {
   
   const body = {
     username: 'Buswatch',
-    avatar_url: vidToSeries(bus.vid).image,
+    avatar_url: exports.vidToSeries(bus.vid).image,
     content: `Bus **${bus.vid}** has returned to service on route **${bus.rt}** out of **${newGarage} Garage** after being out of service for **${secondsToStr(secondsSince)}**`
   };
   
@@ -281,8 +281,8 @@ exports.postRevivedBus = async (bus, existingBus, now) => {
 exports.postOutOfServiceBus = async (bus) => {
   const body = {
     username: 'Buswatch',
-    avatar_url: vidToSeries(bus.vid).image,
-    content: `Bus **${bus.vid}** has not been seen in service since **${epochToDisplay(bus.lastSeen)}** on route **${bus.route}** out of **${exports.decodeGarage(bus.blockId, true)} Garage**`
+    avatar_url: exports.vidToSeries(bus.vid).image,
+    content: `Bus **${bus.vid}** has not been seen in service since **${exports.epochToDisplay(bus.lastSeen)}** on route **${bus.route}** out of **${exports.decodeGarage(bus.blockId, true)} Garage**`
   };
   
   if (bus.note) {
@@ -305,8 +305,8 @@ exports.postOutOfServiceBus = async (bus) => {
 exports.mapBusDisplay = (buses, allowColor, now) => {
   return buses.map(bus => ({
     ...bus,
-    firstSeen: epochToDisplay(bus.firstSeen),
-    lastSeen: epochToDisplay(bus.lastSeen),
+    firstSeen: exports.epochToDisplay(bus.firstSeen),
+    lastSeen: exports.epochToDisplay(bus.lastSeen),
     isInService: allowColor && exports.isInService(now, bus.lastSeen),
     isOutOfService: allowColor && exports.isOutOfService(now, bus.lastSeen),
   }));
