@@ -98,7 +98,6 @@ router.post('/', verifyKeyMiddleware(process.env.DISCORD_PUBLIC_KEY), function(r
           image
         };
       });
-      console.log(JSON.stringify(embeds, 2))
   
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
