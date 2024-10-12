@@ -38,6 +38,10 @@ function createDatabase() {
       garage text,
       note text,
       oosNoted integer,
+      latitude text,
+      longitude text,
+      heading text,
+      destination text,
       primary key(vid)
     );
     create table routes (

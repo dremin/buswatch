@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
+const axios = require('axios');
 
 var db = require('../db');
 var utils = require('../utils');
@@ -40,23 +41,24 @@ router.post('/', verifyKeyMiddleware(process.env.DISCORD_PUBLIC_KEY), function(r
 
       const now = db.getDbDateTime();
       const embeds = buses.map(bus => {
+        const isInService = utils.isInService(now, bus.lastSeen);
         let color = 689407;
+        let image = null;
         if (utils.isOutOfService(now, bus.lastSeen)) {
           color = 16729402;
-        } else if (utils.isInService(now, bus.lastSeen)) {
+        } else if (isInService) {
           color = 3331915;
+        }
+
+        if (isInService && bus.latitude && bus.longitude && process.env.GEOAPIFY_API_KEY && process.env.BASE_URL) {
+          image = { url: `${process.env.BASE_URL}/discord/map/${bus.latitude}/${bus.longitude}/image.jpg` };
         }
 
         const fields = [
           {
             name: "Route",
-            value: `${bus.route}: ${bus.routeName}`,
-            inline: true
-          },
-          {
-            name: "Garage",
-            value: utils.decodeGarage(bus.blockId, true),
-            inline: true
+            value: `${bus.route}: ${bus.routeName}${bus.destination ? ' to ' + bus.destination : ''}`,
+            inline: false
           },
           {
             name: "Block ID",
@@ -88,12 +90,15 @@ router.post('/', verifyKeyMiddleware(process.env.DISCORD_PUBLIC_KEY), function(r
         return {
           color,
           title: `Bus ${bus.vid}`,
+          description: `${utils.decodeGarage(bus.blockId, true)} Garage`,
           thumbnail: {
             url: utils.vidToSeries(bus.vid).image,
           },
-          fields
+          fields,
+          image
         };
       });
+      console.log(JSON.stringify(embeds, 2))
   
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -103,6 +108,23 @@ router.post('/', verifyKeyMiddleware(process.env.DISCORD_PUBLIC_KEY), function(r
   }
 
     return res.status(400).json({ error: 'Unknown command' });
+});
+
+router.get('/map/:latitude/:longitude/image.jpg', async function(req, res, next) {
+  
+  try {
+    const response = await axios.get(`https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=400&height=300&center=lonlat:${req.params.longitude},${req.params.latitude}&zoom=16&marker=lonlat:${req.params.longitude},${req.params.latitude};type:circle;color:%2314cf00;icon:directions-bus;icontype:material;textsize:small&scaleFactor=2&apiKey=${process.env.GEOAPIFY_API_KEY}`, { responseType: 'arraybuffer' });
+    
+    if (response.status === 200) {
+      res.set("Content-Type", "image/jpeg");
+      res.send(response.data);
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  
+  return res.status(400).json({ error: 'Error generating image' });
 });
 
 module.exports = router;
