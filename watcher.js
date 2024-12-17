@@ -62,11 +62,11 @@ const fetchBusData = async () => {
     }
     
     // common case, update existing bus
-    const updateResult = db.query('update buses set lastSeen = ?, route = ?, blockid = ?, garage = ?, oosNoted = 0, latitude = ?, longitude = ?, heading = ?, destination = ? where vid = ?', true, [ now, bus.rt, bus.tablockid, garage, bus.lat, bus.lon, bus.hdg, bus.des, bus.vid ]);
+    const updateResult = db.query('update buses set lastSeen = ?, route = ?, blockid = ?, garage = ?, oosNoted = 0, latitude = ?, longitude = ?, heading = ?, destination = ?, retired = 0 where vid = ?', true, [ now, bus.rt, bus.tablockid, garage, bus.lat, bus.lon, bus.hdg, bus.des, bus.vid ]);
     
     if (updateResult.changes < 1) {
       // missing row -> new bus!
-      db.query('insert into buses (vid, firstSeen, lastSeen, route, blockId, garage, oosNoted, latitude, longitude, heading, destination) values (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)', true, [ bus.vid, now, now, bus.rt, bus.tablockid, garage, bus.lat, bus.lon, bus.hdg, bus.des ]);
+      db.query('insert into buses (vid, firstSeen, lastSeen, route, blockId, garage, oosNoted, latitude, longitude, heading, destination, retired) values (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, 0)', true, [ bus.vid, now, now, bus.rt, bus.tablockid, garage, bus.lat, bus.lon, bus.hdg, bus.des ]);
       await utils.postNewBus(bus);
     }
   }

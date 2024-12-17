@@ -33,11 +33,11 @@ router.get('/:series/:filter?', function(req, res, next) {
   switch (req.params.filter) {
     case 'in-service':
     allowColor = false;
-    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} ${now} - lastSeen < ${process.env.IN_SERVICE_THRESHOLD_SEC}`;
+    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} ${now} - lastSeen < ${process.env.IN_SERVICE_THRESHOLD_SEC} and retired <> 1`;
     title = `${title} currently in service`;
     break;
     case 'active':
-    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} ${now} - lastSeen < ${process.env.STALE_THRESHOLD_SEC}`;
+    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} ${now} - lastSeen < ${process.env.STALE_THRESHOLD_SEC} and retired <> 1`;
     title = `${title} not out of service`;
     break;
     case 'out-of-service':
@@ -53,6 +53,11 @@ router.get('/:series/:filter?', function(req, res, next) {
     whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} note is not null and note != ''`;
     title = `${title} with notes`;
     break;
+    case 'retired':
+    allowColor = false;
+    whereClause = `${whereClause !== '' ? whereClause + ' and' : 'where'} retired = 1`;
+    title = `${title} retired`;
+    break;
     default:
     if (series) {
       title = `All ${title}`;
@@ -67,6 +72,7 @@ router.get('/:series/:filter?', function(req, res, next) {
     oosTitle,
     staleTitle,
     showFilters: true,
+    showRetiredFilter: true,
     filter,
   };
   

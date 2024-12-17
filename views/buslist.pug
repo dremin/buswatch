@@ -12,10 +12,10 @@ mixin buslist(buses, showRoute, showGarage)
     each bus in buses
       tr(class= bus.isInService ? 'in-service' : bus.isOutOfService ? 'out-of-service' : '')
         if bus.note
-          td
+          td(class= bus.retired ? 'retired' : 'not-retired')
             a(onclick=`showNote('${bus.vid}', '${bus.note}')`) #{bus.vid}
         else
-          td= bus.vid
+          td(class= bus.retired ? 'retired' : 'not-retired')= bus.vid
         td= bus.firstSeen
         td= bus.lastSeen
         if showRoute

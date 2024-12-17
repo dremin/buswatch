@@ -1,4 +1,4 @@
-mixin filters(thisUrl, filterTitle, staleTitle, oosTitle)
+mixin filters(thisUrl, filterTitle, staleTitle, oosTitle, showRetiredFilter)
   div(id='filtersPlaceholder')
     ul
       li
@@ -15,3 +15,6 @@ mixin filters(thisUrl, filterTitle, staleTitle, oosTitle)
         a(href=`${thisUrl}/out-of-service`) #{filterTitle} buses #{oosTitle}&nbsp;&raquo;
       li
         a(href=`${thisUrl}/note`) #{filterTitle} buses with notes&nbsp;&raquo;
+      if showRetiredFilter
+        li
+          a(href=`${thisUrl}/retired`) #{filterTitle} buses retired &nbsp;&raquo;

@@ -175,6 +175,10 @@ td a {
   text-decoration: underline;
 }
 
+td.retired {
+  text-decoration: line-through;
+}
+
 .tableCount {
   font-weight: bold;
   padding: 10px;

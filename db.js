@@ -42,6 +42,7 @@ function createDatabase() {
       longitude text,
       heading text,
       destination text,
+      retired integer,
       primary key(vid)
     );
     create table routes (

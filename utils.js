@@ -309,6 +309,7 @@ exports.mapBusDisplay = (buses, allowColor, now) => {
     lastSeen: exports.epochToDisplay(bus.lastSeen),
     isInService: allowColor && exports.isInService(now, bus.lastSeen),
     isOutOfService: allowColor && exports.isOutOfService(now, bus.lastSeen),
+    retired: allowColor && bus.retired,
   }));
 }
 

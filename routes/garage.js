@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
   
   let title = 'Garage rosters';
   
-  let buses = db.query(`select * from buses where lastSeen >= ${now - process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC} order by vid asc`, false);
+  let buses = db.query(`select * from buses where retired <> 1 and lastSeen >= ${now - process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC} order by vid asc`, false);
   
   let garages = [];
   
@@ -37,7 +37,7 @@ router.get('/:sticker/:filter?', function(req, res, next) {
   let allowColor = true;
   let filter = 'all';
   let title = `${garage.name} Garage`;
-  let whereClause = `where garage = '${garage.sticker}' and lastSeen >= ${now - process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC}`;
+  let whereClause = `where garage = '${garage.sticker}' and retired <> 1 and lastSeen >= ${now - process.env.OUT_OF_SERVICE_ROSTER_THRESHOLD_SEC}`;
   
   if (req.params.filter) {
     filter = req.params.filter;
@@ -79,6 +79,7 @@ router.get('/:sticker/:filter?', function(req, res, next) {
     showFilters: true,
     showRoute: true,
     showGarage: false,
+    showRetiredFilter: false,
     filter,
     busSeries,
     totalCount: busSeries.reduce((acc, cur) => acc + cur.busCount, 0),
