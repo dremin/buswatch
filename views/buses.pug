@@ -5,7 +5,7 @@ include filters
 
 block content
   +header(backUrl, title)
+  div(class='tableCount') #{totalCount} bus#{totalCount != 1 ? 'es' : ''}
   if filter == 'all' && showFilters
     +filters(thisUrl, filterTitle, staleTitle, oosTitle, showRetiredFilter)
   +buslist(buses, true, true)
-  div(class='tableCount') #{totalCount} bus#{totalCount != 1 ? 'es' : ''}
