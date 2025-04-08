@@ -5,6 +5,7 @@ include filters
 
 block content
   +header(backUrl, title)
+  div(class='tableCount') #{totalCount} total bus#{totalCount != 1 ? 'es' : ''}
   if filter == 'all' && showFilters
     +filters(thisUrl, filterTitle, staleTitle, oosTitle, showRetiredFilter)
   each series in busSeries
@@ -14,4 +15,3 @@ block content
         label(for=series.id) #{series.id} series
           span #{series.busCount} bus#{series.busCount != 1 ? 'es' : ''}
         +buslist(series.buses, showRoute, showGarage)
-  div(class='tableCount') #{totalCount} total bus#{totalCount != 1 ? 'es' : ''}
