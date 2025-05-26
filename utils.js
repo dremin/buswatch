@@ -20,7 +20,7 @@ exports.series = [
     description: '2005-2008 New Flyer D40LF',
     min: 1000,
     max: 2029,
-    image: 'https://i.imgur.com/fbW9uby.jpeg'
+    image: 'https://i.imgur.com/XEMuiRU.jpeg'
   },
   {
     id: '4000',
