@@ -20,7 +20,7 @@ exports.series = [
     description: '2005-2008 New Flyer D40LF',
     min: 1000,
     max: 2029,
-    image: 'https://chicagobus.org/system/photos/56/large/IMG_6661.JPG.jpg'
+    image: 'https://i.imgur.com/fbW9uby.jpeg'
   },
   {
     id: '4000',
@@ -41,7 +41,7 @@ exports.series = [
     description: '2014-2018 Nova Bus LFS',
     min: 7900,
     max: 8349,
-    image: 'https://chicagobus.org/system/photos/359/large/image.jpeg'
+    image: 'https://i.imgur.com/8eQUIrn.jpeg'
   },
   {
     id: '8350',
