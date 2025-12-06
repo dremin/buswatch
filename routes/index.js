@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
     title: 'Buswatch',
     subtitle: 'Select a CTA bus series to view the latest service information.',
     updateFreq: `Data is updated every ${process.env.INTERVAL_MIN} ${process.env.INTERVAL_MIN !== '0' ? 'minutes' : 'minute'}.`,
-    series: utils.series,
+    series: utils.series.filter(s => !s.hidden),
   });
 });
 

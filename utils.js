@@ -13,7 +13,8 @@ exports.series = [
     description: '2014 New Flyer XE40',
     min: 700,
     max: 799,
-    image: 'https://chicagobus.org/system/photos/288/large/IMG_33661.JPG'
+    image: 'https://chicagobus.org/system/photos/288/large/IMG_33661.JPG',
+    hidden: true
   },
   {
     id: '1000',
