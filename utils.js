@@ -118,16 +118,23 @@ exports.decodeGarage = (blockId, expand) => {
   return expand ? expandedGarage : garage;
 }
 
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Chicago',
+  month: 'numeric',
+  day: 'numeric',
+  year: '2-digit',
+  hour: 'numeric',
+  minute: 'numeric'
+});
+
+const dateOnlyFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Chicago',
+  month: 'numeric',
+  day: 'numeric',
+  year: '2-digit'
+});
+
 exports.epochToDisplay = (epoch) => {
-  const options = {
-    timeZone: 'America/Chicago',
-    month: "numeric",
-    day: "numeric",
-    year: "2-digit",
-    hour: "numeric",
-    minute: "numeric"
-  };
-  
   if (!epoch) {
     return '';
   }
@@ -136,11 +143,10 @@ exports.epochToDisplay = (epoch) => {
   
   if ((date.getUTCHours() === 5 || date.getUTCHours() === 6) && date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0) {
     // Exactly midnight just means incomplete data
-    delete options.hour;
-    delete options.minute;
+    return dateOnlyFormatter.format(date);
   }
   
-  return date.toLocaleString('en-US', options);
+  return dateFormatter.format(date);
 }
 
 exports.isInService = (now, lastSeen) => {

@@ -37,6 +37,9 @@ const fetchBusData = async () => {
   
   // Get the current state so that we can compare
   const buses = db.query(`select * from buses order by vid asc`, false);
+  const busesById = new Map(
+    buses.map(bus => [bus.vid, bus])
+  );
   
   // Update the database
   for (vehicle in vehicles) {
@@ -48,7 +51,7 @@ const fetchBusData = async () => {
       continue;
     }
     
-    const existingBus = buses.find(b => b.vid == bus.vid);
+    const existingBus = busesById.get(bus.vid);
     
     if (existingBus) {
       // check if we should send any change alerts

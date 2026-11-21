@@ -60,6 +60,7 @@ function createDatabase() {
 function init() {
   try {
     db = new sqlite3(dbFile, { fileMustExist: true });
+    db.pragma('journal_mode = WAL');
   } catch {
     try {
       db = new sqlite3(dbFile);
